@@ -1,4 +1,4 @@
-package ru.skillbranch.matrixmvvm.extensions
+package ru.serzh272.matrixmvvm.extensions
 
 import ru.serzh272.matrix.Fraction
 

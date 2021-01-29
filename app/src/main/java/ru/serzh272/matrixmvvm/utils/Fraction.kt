@@ -1,34 +1,33 @@
 package ru.serzh272.matrix
 
-import ru.skillbranch.matrixmvvm.utils.ProperFraction
 import java.lang.Exception
 import java.util.*
 import kotlin.math.abs
 import kotlin.math.pow
 
-open class Fraction {
-    open var numerator: Int = 0
+class Fraction {
+    var numerator: Int = 0
 
     @ExperimentalUnsignedTypes
-    open var denominator: UInt = 1u
+    var denominator: UInt = 1u
 
     @ExperimentalUnsignedTypes
     constructor() {
-        numerator = 0
-        denominator = 1u
+        this.numerator = 0
+        this.denominator = 1u
     }
 
     @ExperimentalUnsignedTypes
     constructor(n: Int, d: UInt) {
         if (d.toInt() == 0) throw Exception("Denominator must be not 0")
-        numerator = n
-        denominator = d
+        this.numerator = n
+        this.denominator = d
     }
 
     @ExperimentalUnsignedTypes
     constructor(n: Int) {
-        numerator = n
-        denominator = 1u
+        this.numerator = n
+        this.denominator = 1u
     }
 
     @ExperimentalUnsignedTypes
@@ -39,8 +38,8 @@ open class Fraction {
                 val sNumerator = frList[0]
                 val sDenominator = frList[1]
                 if (sDenominator != "") {
-                    numerator = sNumerator.toInt()
-                    denominator = sDenominator.toUInt()
+                    this.numerator = sNumerator.toInt()
+                    this.denominator = sDenominator.toUInt()
                 }
             }
             strFr.contains(',') or strFr.contains('.') -> {
@@ -48,16 +47,16 @@ open class Fraction {
                 val i = l[0].toIntOrNull()
                 val dec = l[1].toIntOrNull()
                 val precision = l[1].length
-                denominator = 10.0.pow(precision).toUInt()
-                numerator = (dec ?: 0) + (i ?: 0) * denominator.toInt()
+                this.denominator = 10.0.pow(precision).toUInt()
+                this.numerator = (dec ?: 0) + (i ?: 0) * this.denominator.toInt()
             }
             strFr == "" -> {
-                numerator = 0
-                denominator = 1u
+                this.numerator = 0
+                this.denominator = 1u
             }
             else -> {
-                numerator = strFr.toInt()
-                denominator = 1u
+                this.numerator = strFr.toInt()
+                this.denominator = 1u
             }
         }
     }
@@ -311,8 +310,12 @@ open class Fraction {
         MIXED
     }
 
-    fun toProperFraction():ProperFraction{
-        return ProperFraction(integ = this.numerator / this.denominator.toInt(), numerator = abs(this.numerator) % this.denominator.toInt(), denominator = this.denominator)
+    /**
+     * getValues function returns Triple of integer part of fraction, numerator, denominator
+     */
+    @ExperimentalUnsignedTypes
+    fun getValues():Triple<Int, Int, UInt>{
+        return Triple(this.numerator/this.denominator.toInt(), this.numerator % this.denominator.toInt(), this.denominator)
     }
 }
 
