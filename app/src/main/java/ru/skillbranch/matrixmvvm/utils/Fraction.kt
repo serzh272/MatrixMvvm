@@ -1,16 +1,16 @@
 package ru.serzh272.matrix
 
+import ru.skillbranch.matrixmvvm.utils.ProperFraction
 import java.lang.Exception
 import java.util.*
 import kotlin.math.abs
 import kotlin.math.pow
-import kotlin.math.round
 
-class Fraction {
-    var numerator: Int = 0
+open class Fraction {
+    open var numerator: Int = 0
 
     @ExperimentalUnsignedTypes
-    var denominator: UInt = 1u
+    open var denominator: UInt = 1u
 
     @ExperimentalUnsignedTypes
     constructor() {
@@ -78,6 +78,7 @@ class Fraction {
             }
         }
     }
+
 
     @ExperimentalUnsignedTypes
     fun normalize(): Fraction {
@@ -310,5 +311,8 @@ class Fraction {
         MIXED
     }
 
+    fun toProperFraction():ProperFraction{
+        return ProperFraction(integ = this.numerator / this.denominator.toInt(), numerator = abs(this.numerator) % this.denominator.toInt(), denominator = this.denominator)
+    }
 }
 
