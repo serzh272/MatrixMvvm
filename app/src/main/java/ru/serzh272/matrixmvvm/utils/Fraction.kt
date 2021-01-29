@@ -22,12 +22,14 @@ class Fraction {
         if (d.toInt() == 0) throw Exception("Denominator must be not 0")
         this.numerator = n
         this.denominator = d
+        this.normalize()
     }
 
     @ExperimentalUnsignedTypes
     constructor(n: Int) {
         this.numerator = n
         this.denominator = 1u
+        this.normalize()
     }
 
     @ExperimentalUnsignedTypes
@@ -59,6 +61,7 @@ class Fraction {
                 this.denominator = 1u
             }
         }
+        this.normalize()
     }
 
     @ExperimentalUnsignedTypes
