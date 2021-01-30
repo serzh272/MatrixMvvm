@@ -22,7 +22,7 @@ class Matrix(r: Int = 3, c: Int = 3) {
     }
 
     constructor(mStr: String) : this() {
-        val strRows = mStr.split(Regex("\\}([,\\s]+)\\{")).map { it.replace(Regex("[}{]"), "") }
+        val strRows = mStr.split(Regex("}([,\\s]+)\\{")).map { it.replace(Regex("[}{]"), "") }
         this.numRows = strRows.size
         this.numColumns = strRows[0].split(Regex("[,\\s]+")).size
         var rowItems: List<String>
@@ -110,31 +110,36 @@ class Matrix(r: Int = 3, c: Int = 3) {
     operator fun Fraction.times(m: Matrix): Matrix {
         return m * this
     }
-
+    /** Adds row to [pos] position
+     */
     fun addRow(pos: Int) {
         this.matr.add(pos, MutableList(this.numColumns) { Fraction() })
         this.numRows++
     }
-
+    /** Adds row to end position
+     */
     fun addRow() {
         this.matr.add(MutableList(this.numColumns) { Fraction() })
         this.numRows++
     }
-
+    /** Adds column to [pos] position
+     */
     fun addColumn(pos: Int) {
         for (i in 0 until this.numRows) {
             this.matr[i].add(pos, Fraction())
         }
         this.numColumns++
     }
-
+    /** Adds column to end position
+     */
     fun addColumn() {
         for (i in 0 until this.numRows) {
             this.matr[i].add(Fraction())
         }
         this.numColumns++
     }
-
+    /** Removes row at [pos] position
+     */
     fun removeRowAt(pos: Int) {
         if ((pos < this.numRows) and (pos >= 0)) {
             this.matr.removeAt(pos)
@@ -143,11 +148,13 @@ class Matrix(r: Int = 3, c: Int = 3) {
             throw IndexOutOfBoundsException()
         }
     }
-
+    /** Removes row at end position
+     */
     fun removeRow() {
         removeRowAt(numRows - 1)
     }
-
+    /** Removes column at [pos] position
+     */
     fun removeColumnAt(pos: Int) {
         if ((pos < this.numColumns) and (pos >= 0)) {
             for (i in 0 until this.numRows) {
@@ -158,23 +165,27 @@ class Matrix(r: Int = 3, c: Int = 3) {
             throw IndexOutOfBoundsException()
         }
     }
-
+    /** Removes column at end position
+     */
     fun removeColumn() {
         removeColumnAt(numColumns - 1)
     }
-
+    /** Adds [n] rows below [pos] position
+     */
     fun addRows(pos: Int, n: Int) {
         for (i in 1..n) {
             this.addRow(pos + i - 1)
         }
     }
-
+    /** Adds [n] columns after [pos] position
+     */
     fun addColumns(pos: Int, n: Int) {
         for (i in 1..n) {
             this.addColumn(pos + i - 1)
         }
     }
-
+    /** Swaps [r2] and [r1] rows
+     */
     fun swapRows(r1: Int, r2: Int) {
         var f: Fraction
         for (j in 0 until this.numColumns) {
@@ -183,7 +194,8 @@ class Matrix(r: Int = 3, c: Int = 3) {
             this[r2, j] = f
         }
     }
-
+    /** Swaps [c2] and [c1] columns
+     */
     fun swapColumns(c1: Int, c2: Int) {
         var f: Fraction
         for (i in 0 until this.numRows) {
@@ -192,19 +204,22 @@ class Matrix(r: Int = 3, c: Int = 3) {
             this[i, c2] = f
         }
     }
-
+    /** Subtracts from row [r2] multiplication row [r1] by [fr] parameter
+     */
     fun multRows(r1: Int, r2: Int, fr: Fraction) {
         for (j in 0 until this.numColumns) {
             this[r2, j] -= this[r1, j] * fr
         }
     }
-
+    /** Subtracts from column [c2] multiplication column [c1] by [fr] parameter
+     */
     fun multColumns(c1: Int, c2: Int, fr: Fraction) {
         for (i in 0 until this.numRows) {
             this[i, c2] -= this[i, c1] * fr
         }
     }
-
+    /** Returns a third norm of matrix
+     */
     fun norm3(): Double {
         var fr = Fraction()
         for (i in 0 until this.numRows) {
@@ -216,6 +231,8 @@ class Matrix(r: Int = 3, c: Int = 3) {
         return sqrt(fr.toDouble())
     }
 
+    /** Transpose this matrix.
+     */
     fun transpose() {
         val m = Matrix(this.numColumns, this.numRows)
         for (i in 0 until this.numRows) {
@@ -228,6 +245,7 @@ class Matrix(r: Int = 3, c: Int = 3) {
         this.numColumns = m.numColumns
     }
 
+
     fun copy(): Matrix {
         val res = Matrix(this.numRows, this.numColumns)
         for (i in 0 until this.numRows) {
@@ -238,6 +256,8 @@ class Matrix(r: Int = 3, c: Int = 3) {
         return res
     }
 
+    /** Returns a determinant of matrix.
+     */
     fun determinant(): Fraction {
         if (this.numRows == this.numColumns) {
             val m: Matrix = this.copy()
@@ -294,7 +314,8 @@ class Matrix(r: Int = 3, c: Int = 3) {
             throw Exception("Matrix must be squared")
         }
     }
-
+    /** Set square matrix to identity matrix.
+     */
     private fun setEMatr() {
         if (this.numRows == this.numColumns) {
             for (i in 0 until this.numRows) {
@@ -311,7 +332,9 @@ class Matrix(r: Int = 3, c: Int = 3) {
         }
     }
 
-    fun transformMatrix(type: transformType): Matrix {
+     /** Returns the inverse of the matrix, the lower triangular matrix or the upper triangular matrix with diagonal identity.
+     *The [type] value should be from [Matrix.TransformType] and may be INVERSE, TOP_TRIANGLE or BOTTOM_TRIANGLE*/
+    fun transformMatrix(type: TransformType): Matrix {
         val dt: Fraction = this.determinant()
         if (dt.equals(0)) {
             throw Exception("Determinant equals 0")
@@ -357,13 +380,15 @@ class Matrix(r: Int = 3, c: Int = 3) {
                 }
             }
             return when (type) {
-                transformType.INVERT -> x
-                transformType.BOTTOM_TRIANGLE -> b
-                transformType.TOP_TRIANGLE -> c
+                TransformType.INVERSE -> x
+                TransformType.BOTTOM_TRIANGLE -> b
+                TransformType.TOP_TRIANGLE -> c
             }
         }
     }
 
+    /** Returns a Frobenius matrix from square matrix.
+     */
     fun getFrobeniusMatrix(): Matrix {
         if (this.numRows == this.numColumns) {
             val n: Int = this.numColumns
@@ -403,9 +428,9 @@ class Matrix(r: Int = 3, c: Int = 3) {
                     e[n - g - 2, i] = mFr[n - g - 1, i].copy()
                 }
                 mFr = if (!e.determinant().equals(0)) {
-                    (e * mFr) * (e.transformMatrix(transformType.INVERT))
+                    (e * mFr) * (e.transformMatrix(TransformType.INVERSE))
                 } else {
-                    (e * mFr) * (e.transformMatrix(transformType.INVERT))
+                    (e * mFr) * (e.transformMatrix(TransformType.INVERSE))
                 }
             }
             return mFr
@@ -434,9 +459,10 @@ class Matrix(r: Int = 3, c: Int = 3) {
         }
         return res
     }
-
-    enum class transformType {
-        INVERT,
+    /** Types of matrix for [transformMatrix] method.
+     */
+    enum class TransformType {
+        INVERSE,
         TOP_TRIANGLE,
         BOTTOM_TRIANGLE
     }
