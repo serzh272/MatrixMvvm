@@ -78,6 +78,7 @@ class Fraction {
                     this.toString()
                 }
             }
+            FractionType.DECIMAL -> "${this.numerator/this.denominator.toInt()}"
         }
     }
 
@@ -310,7 +311,8 @@ class Fraction {
     }
     enum class FractionType{
         COMMON,
-        MIXED
+        MIXED,
+        DECIMAL
     }
 
     /**

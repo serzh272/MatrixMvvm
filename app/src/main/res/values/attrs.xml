@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="MatrixLayout">
+        <attr name="rows" format="integer"/>
+        <attr name="columns" format="integer"/>
+        <attr name="spacing" format="dimension"/>
+        <attr name="matrix" format="reference"/>
+        <attr name="cells_color" format="color"/>
+    </declare-styleable>
+    <declare-styleable name="GershgorinViewGroupLayout">
+        <attr name="graph_color" format="color"/>
+        <attr name="x_axis_color" format="color"/>
+        <attr name="y_axis_color" format="color"/>
+        <attr name="filled" format="boolean"/>
+    </declare-styleable>
+    <declare-styleable name="FractionViewLayout">
+        <attr name="color" format="color"/>
+        <attr name="border_width" format="integer"/>
+        <attr name="fraction_space" format="dimension"/>
+        <attr name="numerator" format="integer"/>
+        <attr name="denominator" format="integer"/>
+        <attr name="integ" format="integer"/>
+        <attr name="mode" format="integer"/>
+
+    </declare-styleable>
+</resources>
