@@ -22,12 +22,12 @@ class Matrix(r: Int = 3, c: Int = 3) {
     }
 
     constructor(mStr: String) : this() {
-        val strRows = mStr.split(Regex("}([,\\s]+)\\{")).map { it.replace(Regex("[}{]"), "") }
+        val strRows = mStr.split(Regex("\\}(,\\s*)\\{")).map { it.replace(Regex("[}{]"), "") }
         this.numRows = strRows.size
-        this.numColumns = strRows[0].split(Regex("[,\\s]+")).size
+        this.numColumns = strRows[0].split(Regex(",\\s*")).size
         var rowItems: List<String>
         for (r in 0 until this.numRows) {
-            rowItems = strRows[r].split(Regex("[,\\s]+"))
+            rowItems = strRows[r].split(Regex(",\\s*")).map { it.trim() }
             for (c in 0 until this.numColumns) {
                 matr[r][c] = Fraction(rowItems[c])
             }

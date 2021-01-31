@@ -6,6 +6,7 @@
         <attr name="spacing" format="dimension"/>
         <attr name="matrix" format="reference"/>
         <attr name="cells_color" format="color"/>
+        <attr name="buttons_thickness" format="dimension"/>
     </declare-styleable>
     <declare-styleable name="GershgorinViewGroupLayout">
         <attr name="graph_color" format="color"/>

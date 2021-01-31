@@ -5,12 +5,14 @@ import android.content.res.TypedArray
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
+import androidx.core.view.marginTop
+import com.google.android.material.button.MaterialButton
 import ru.serzh272.matrix.Fraction
 import ru.serzh272.matrixmvvm.R
 import kotlin.math.max
 
 class FractionView: View{
-    var backColor: Int = Color.WHITE
+    var backColor: Int = Color.LTGRAY
     var mode: Int = 2
     @ExperimentalUnsignedTypes
     var mFraction = Fraction(2, 3u)
@@ -23,7 +25,7 @@ class FractionView: View{
     @ExperimentalUnsignedTypes
     constructor(context: Context?, attrs: AttributeSet?): this(context, attrs, 0)
     @ExperimentalUnsignedTypes
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int): super(context, attrs, defStyleAttr){
+    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int): super(context!!, attrs, defStyleAttr){
         initAttrs(context,attrs)
     }
     @ExperimentalUnsignedTypes

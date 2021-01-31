@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="matrix_button_style" parent="@style/Widget.MaterialComponents.Button">
+        <item name="colorPrimary">@android:color/holo_blue_dark</item>
+        <item name="android:gravity">center</item>
+    </style>
+</resources>
