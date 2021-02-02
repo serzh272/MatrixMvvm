@@ -5,40 +5,40 @@ import android.content.res.TypedArray
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
+import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.marginTop
 import com.google.android.material.button.MaterialButton
 import ru.serzh272.matrix.Fraction
 import ru.serzh272.matrixmvvm.R
 import kotlin.math.max
 
-class FractionView: View{
+@ExperimentalUnsignedTypes
+class FractionView @JvmOverloads constructor(context: Context,
+                   attrs: AttributeSet? = null,
+                   defStyleAttr: Int = 0
+): MaterialButton(context,attrs, defStyleAttr){
+    var fractionTextColor: Int = Color.WHITE
     var backColor: Int = Color.LTGRAY
     var mode: Int = 2
-    @ExperimentalUnsignedTypes
     var mFraction = Fraction(2, 3u)
     private var sp:Float = 0.0f
     private var anchor: Point = Point(0, 0)
     var pos:Point = Point()
-    @ExperimentalUnsignedTypes
-    constructor(context: Context?): this(context, null){
-    }
-    @ExperimentalUnsignedTypes
-    constructor(context: Context?, attrs: AttributeSet?): this(context, attrs, 0)
-    @ExperimentalUnsignedTypes
-    constructor(context: Context?, attrs: AttributeSet?, defStyleAttr: Int): super(context!!, attrs, defStyleAttr){
+    init {
         initAttrs(context,attrs)
+        setBackgroundResource(R.drawable.button_bg)
     }
-    @ExperimentalUnsignedTypes
     private fun initAttrs(context: Context?, attrs: AttributeSet?){
         val a:TypedArray = context!!.theme.obtainStyledAttributes(attrs,
             R.styleable.FractionViewLayout, 0,0)
         try {
-            mFraction.numerator = a.getInteger(R.styleable.FractionViewLayout_numerator, 27)
-            mFraction.denominator = a.getInteger(R.styleable.FractionViewLayout_denominator, 3).toUInt()
+            mFraction.numerator = a.getInteger(R.styleable.FractionViewLayout_numerator, 0)
+            mFraction.denominator = a.getInteger(R.styleable.FractionViewLayout_denominator, 1).toUInt()
             mFraction.normalize()
             //presenter.mFraction.integ = a.getInteger(R.styleable.FractionViewLayout_integ, 0).toLong()
             mode = a.getInteger(R.styleable.FractionViewLayout_mode, 1)
             backColor = a.getColor(R.styleable.FractionViewLayout_color, Color.WHITE)
+            fractionTextColor = a.getColor(R.styleable.FractionViewLayout_text_color, ResourcesCompat.getColor(resources, R.color.color_on_primary, context.theme))
             sp = a.getDimension(R.styleable.FractionViewLayout_fraction_space, 2.0f)
         }
         finally {
@@ -46,7 +46,7 @@ class FractionView: View{
         }
     }
 
-    @ExperimentalUnsignedTypes
+
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         showFraction(canvas!!, mFraction)
@@ -56,7 +56,7 @@ class FractionView: View{
         invalidate()
     }
 
-    @ExperimentalUnsignedTypes
+
     fun showFraction(canvas: Canvas, fraction: Fraction) {
         val p = Paint(Paint.ANTI_ALIAS_FLAG)
         p.style = Paint.Style.STROKE
@@ -76,8 +76,8 @@ class FractionView: View{
         var integSpan = 0.0f
         p.style = Paint.Style.FILL
         p.color = backColor
-        canvas.drawRect(0.0f, 0.0f, this.width.toFloat(), this.height.toFloat(),p)
-        p.setColor(Color.BLUE)
+        //canvas.drawRect(0.0f, 0.0f, this.width.toFloat(), this.height.toFloat(),p)
+        p.setColor(fractionTextColor)
         if ((fraction.denominator == 1u) or (mode == 3)){
             txt = if (mode == 3){
                 if (fraction.numerator%fraction.denominator.toLong() == 0L){
@@ -140,7 +140,7 @@ class FractionView: View{
         }
     }
 
-    @ExperimentalUnsignedTypes
+
     override fun toString(): String {
         return mFraction.toString()
     }

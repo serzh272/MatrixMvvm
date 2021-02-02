@@ -1,8 +1,8 @@
 package ru.serzh272.matrixmvvm.views
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.content.res.Configuration
-import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.Point
 import android.text.InputType
@@ -10,14 +10,10 @@ import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.widget.*
 
-import android.widget.EditText
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
-import androidx.core.view.marginBottom
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textview.MaterialTextView
 import ru.serzh272.matrix.*
@@ -27,18 +23,22 @@ import ru.serzh272.matrixmvvm.utils.Matrix
 import kotlin.math.min
 
 @ExperimentalUnsignedTypes
-class MatrixViewGroup : ViewGroup, View.OnClickListener {
-    companion object{
+class MatrixViewGroup @JvmOverloads constructor(
+    context: Context,
+    attrs: AttributeSet?,
+    defStyleAttr: Int = 0
+) : ViewGroup(context, attrs, defStyleAttr), View.OnClickListener {
+    companion object {
         private const val DEFAULT_BUTTON_THICKNESS = 32
-        private const val DEFAULT_BUTTON_WIDTH = 48
-        private const val DEFAULT_TEXT_VIEW_WIDTH = 48
+        private const val DEFAULT_BUTTON_WIDTH = 32
+        private const val DEFAULT_TEXTVIEW_WIDTH = 72
         private const val DEFAULT_SPACING = 4
+        private const val MAX_DIMENSION = 10
+        private const val MIN_DIMENSION = 1
     }
-    var mMatrix = Matrix(
-        "{1, 2, 3}," +
-                "{9, 8, 17}," +
-                "{4, 2, 5}"
-    )
+
+    private var innerPadding: Int = context.dpToPx(DEFAULT_SPACING).toInt()
+    var mMatrix = Matrix()
 
     @ExperimentalUnsignedTypes
     var numRows: Int = mMatrix.numRows
@@ -49,15 +49,15 @@ class MatrixViewGroup : ViewGroup, View.OnClickListener {
     var spacing: Int = context.dpToPx(DEFAULT_SPACING).toInt()
     private var buttonThickness: Int = context.dpToPx(DEFAULT_BUTTON_THICKNESS).toInt()
     private var buttonWidth: Int = context.dpToPx(DEFAULT_BUTTON_WIDTH).toInt()
-    private var textViewWidth: Int = context.dpToPx(DEFAULT_TEXT_VIEW_WIDTH).toInt()
+    private var textViewWidth: Int = context.dpToPx(DEFAULT_TEXTVIEW_WIDTH).toInt()
     private var cellSize: Float = 50.0f
     var cellsColor: Int = Color.WHITE
-    private var btnDecCols: ImageView = ImageView(context)
-    private var btnIncRows: ImageView = ImageView(context)
-    private var btnIncCols: ImageView = ImageView(context)
-    private var btnDecRows: ImageView = ImageView(context)
-    private var btnIncRowsCols: ImageView = ImageView(context)
-    private var btnDecRowsCols: ImageView = ImageView(context)
+    private var btnDecCols: MaterialButton = MaterialButton(context)
+    private var btnIncRows: MaterialButton = MaterialButton(context)
+    private var btnIncCols: MaterialButton = MaterialButton(context)
+    private var btnDecRows: MaterialButton = MaterialButton(context)
+    private var btnIncRowsCols: MaterialButton = MaterialButton(context)
+    private var btnDecRowsCols: MaterialButton = MaterialButton(context)
     private var mEditText: EditText = EditText(context)
     private var currentPos: Point = Point(0, 0)
     private var tvNumRows: MaterialTextView = MaterialTextView(context)
@@ -65,57 +65,73 @@ class MatrixViewGroup : ViewGroup, View.OnClickListener {
 
     @ExperimentalUnsignedTypes
     private var mFractionViews: MutableList<MutableList<FractionView>> = MutableList(numRows) {
-        MutableList(numColumns) {FractionView(context)}}
+        MutableList(numColumns) { FractionView(context) }
+    }
 
     init {
+        initAttrs(context, attrs)
         mFractionViews = MutableList(numRows) { MutableList(numColumns) { FractionView(context) } }
-        with(btnDecRows){
-            setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.ic_remove,context.theme))
+        with(btnDecRows) {
+            setIconResource(R.drawable.ic_remove)
+            this.iconGravity = MaterialButton.ICON_GRAVITY_TEXT_START
+            setBackgroundResource(R.drawable.button_bg)
+
             addView(this)
-            setBackgroundColor(ContextCompat.getColor(context, R.color.purple_500))
+
+            //setBackgroundColor(ContextCompat.getColor(context, R.color.color_primary))
         }
         btnDecRows.setOnClickListener(this)
-        with(btnIncRows){
-            setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.ic_add,context.theme))
+        with(btnIncRows) {
+            setIconResource(R.drawable.ic_add)
+            setBackgroundResource(R.drawable.button_bg)
             addView(this)
-            setBackgroundColor(ContextCompat.getColor(context, R.color.purple_500))
+            //setBackgroundColor(ContextCompat.getColor(context, R.color.color_primary))
         }
         btnIncRows.setOnClickListener(this)
-        with(btnDecCols){
-            setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.ic_remove,context.theme))
+        with(btnDecCols) {
+            setIconResource(R.drawable.ic_remove)
+            setBackgroundResource(R.drawable.button_bg)
             addView(this)
-            setBackgroundColor(ContextCompat.getColor(context, R.color.purple_500))
+            //setBackgroundColor(ContextCompat.getColor(context, R.color.color_primary))
         }
         btnDecCols.setOnClickListener(this)
-        with(btnIncCols){
-            setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.ic_add,context.theme))
+        with(btnIncCols) {
+            setIconResource(R.drawable.ic_add)
+            setBackgroundResource(R.drawable.button_bg)
             addView(this)
-            setBackgroundColor(ContextCompat.getColor(context, R.color.purple_500))
+            //setBackgroundColor(ContextCompat.getColor(context, R.color.color_primary))
         }
         btnIncCols.setOnClickListener(this)
-        with(btnIncRowsCols){
-            setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.ic_add,context.theme))
+        with(btnIncRowsCols) {
+            setIconResource(R.drawable.ic_add)
+            setBackgroundResource(R.drawable.button_bg)
             addView(this)
-            setBackgroundColor(ContextCompat.getColor(context, R.color.purple_500))
+            //setBackgroundColor(ContextCompat.getColor(context, R.color.color_primary))
         }
         btnIncRowsCols.setOnClickListener(this)
-        with(btnDecRowsCols){
-            setImageDrawable(ResourcesCompat.getDrawable(resources, R.drawable.ic_remove,context.theme))
+        with(btnDecRowsCols) {
+            setIconResource(R.drawable.ic_remove)
+            setBackgroundResource(R.drawable.button_bg)
             addView(this)
-            setBackgroundColor(ContextCompat.getColor(context, R.color.purple_500))
+            //setBackgroundColor(ContextCompat.getColor(context, R.color.color_primary))
         }
         btnDecRowsCols.setOnClickListener(this)
-        tvNumCols.text = "3"
-        //tvNumCols.textAlignment = TextView.TEXT_ALIGNMENT_CENTER
-        with(tvNumCols){
-            gravity = Gravity.CENTER
-            text = "3"
+        with(tvNumCols) {
             addView(this)
+            maxLines = 1
+            textSize = 24f
+            layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
+            gravity = Gravity.CENTER
+            text = "$numColumns"
         }
-        with(tvNumRows){
-            gravity = Gravity.CENTER
-            text = "3"
+        with(tvNumRows) {
             addView(this)
+            maxLines = 1
+            textSize = 24f
+            layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
+            gravity = Gravity.CENTER
+            text = "$numRows"
+
         }
 
         mEditText.inputType = InputType.TYPE_NULL
@@ -128,24 +144,6 @@ class MatrixViewGroup : ViewGroup, View.OnClickListener {
                 addView(mFractionViews[i][j])
             }
         }
-    }
-
-    constructor(context: Context?, matrix: Matrix) : super(context) {
-        mMatrix = matrix
-
-    }
-
-    constructor(context: Context?) : super(context)
-    constructor(context: Context?, attrs: AttributeSet) : super(context, attrs) {
-        initAttrs(context!!, attrs)
-    }
-
-    constructor(context: Context?, attrs: AttributeSet, defStyleAttr: Int) : super(
-        context,
-        attrs,
-        defStyleAttr
-    ) {
-        initAttrs(context!!, attrs)
     }
 
     fun showEditText(fv: FractionView) {
@@ -168,7 +166,7 @@ class MatrixViewGroup : ViewGroup, View.OnClickListener {
         }
     }
 
-    private fun initAttrs(context: Context, attrs: AttributeSet) {
+    private fun initAttrs(context: Context, attrs: AttributeSet?) {
         val a = context.theme.obtainStyledAttributes(
             attrs,
             R.styleable.MatrixLayout, 0, 0
@@ -176,11 +174,18 @@ class MatrixViewGroup : ViewGroup, View.OnClickListener {
         try {
             numRows = a.getInt(R.styleable.MatrixLayout_rows, 3)
             numColumns = a.getInt(R.styleable.MatrixLayout_columns, 3)
-            spacing = a.getDimension(R.styleable.MatrixLayout_spacing,
-                context.dpToPx(DEFAULT_SPACING)).toInt()
-            buttonThickness = a.getDimension(R.styleable.MatrixLayout_buttons_thickness,
-                context.dpToPx(DEFAULT_BUTTON_THICKNESS)).toInt()
-            cellsColor = a.getColor(R.styleable.MatrixLayout_cells_color, Color.LTGRAY)
+            spacing = a.getDimension(
+                R.styleable.MatrixLayout_spacing,
+                context.dpToPx(DEFAULT_SPACING)
+            ).toInt()
+            buttonThickness = a.getDimension(
+                R.styleable.MatrixLayout_buttons_thickness,
+                context.dpToPx(DEFAULT_BUTTON_THICKNESS)
+            ).toInt()
+            cellsColor = a.getColor(
+                R.styleable.MatrixLayout_cells_color,
+                ContextCompat.getColor(context, R.color.color_secondary)
+            )
         } finally {
             a.recycle()
         }
@@ -304,39 +309,51 @@ class MatrixViewGroup : ViewGroup, View.OnClickListener {
                 showEditText(v)
             }
             btnDecCols -> {
-                removeColumn()
+                if (numColumns > MIN_DIMENSION) {
+                    removeColumn()
+                }
                 hideEditText()
                 //Toast.makeText(context, "$numRows x $numColumns", Toast.LENGTH_SHORT).show()
             }
             btnIncCols -> {
-                addColumn()
+                if (numColumns < MAX_DIMENSION) {
+                    addColumn()
+                }
                 hideEditText()
                 //Toast.makeText(context, "$numRows x $numColumns", Toast.LENGTH_SHORT).show()
             }
             btnDecRows -> {
-                removeRow()
+                if (numRows > MIN_DIMENSION) {
+                    removeRow()
+                }
                 hideEditText()
                 //Toast.makeText(context, "$numRows x $numColumns", Toast.LENGTH_SHORT).show()
             }
             btnIncRows -> {
                 //addRow()
-                addRow()
+                if (numRows < MAX_DIMENSION) {
+                    addRow()
+                }
                 hideEditText()
                 //Toast.makeText(context, "$numRows x $numColumns", Toast.LENGTH_SHORT).show()
             }
-            btnIncRowsCols ->{
-                addRow()
-                addColumn()
+            btnIncRowsCols -> {
+                if (numRows < MAX_DIMENSION && numColumns < MAX_DIMENSION) {
+                    addRow()
+                    addColumn()
+                }
                 hideEditText()
                 //Toast.makeText(context, "$numRows x $numColumns", Toast.LENGTH_SHORT).show()
             }
-            btnDecRowsCols ->{
-                removeRow()
-                removeColumn()
+            btnDecRowsCols -> {
+                if (numRows > MIN_DIMENSION && numColumns > MIN_DIMENSION) {
+                    removeRow()
+                    removeColumn()
+                }
                 hideEditText()
             }
         }
-        if (v is ImageView){
+        if (v is MaterialButton && v !is FractionView ) {
             Toast.makeText(context, "$numRows x $numColumns", Toast.LENGTH_SHORT).show()
             tvNumRows.text = "$numRows"
             tvNumCols.text = "$numColumns"
@@ -351,7 +368,8 @@ class MatrixViewGroup : ViewGroup, View.OnClickListener {
                 numRows * cellSize.toInt() - (numRows - 1) * spacing - buttonThickness * 2) / 2
         for (i in 0 until numRows) {
             for (j in 0 until numColumns) {
-                val left = paddingLeft + buttonThickness+ j * (cellSize.toInt() + spacing) + leftPadding
+                val left =
+                    paddingLeft + buttonThickness + j * (cellSize.toInt() + spacing) + leftPadding
                 val right = paddingLeft + (j + 1) * cellSize.toInt() + j * spacing + leftPadding +
                         buttonThickness
                 val top: Int = paddingTop + i * (cellSize.toInt() + spacing) + topPadding +
@@ -379,59 +397,61 @@ class MatrixViewGroup : ViewGroup, View.OnClickListener {
         )
         mEditText.clearFocus()
         btnDecCols.layout(
-            ((measuredWidth - textViewWidth)/2) - buttonWidth,
-            measuredHeight - buttonThickness,
-            measuredWidth/2 - textViewWidth/2,
-            measuredHeight
+            ((measuredWidth - textViewWidth) / 2) - buttonWidth,
+            measuredHeight - buttonThickness - paddingBottom,
+            measuredWidth / 2 - textViewWidth / 2,
+            measuredHeight - paddingBottom
         )
         tvNumCols.layout(
-            measuredWidth/2 - textViewWidth/2,
-            measuredHeight - buttonThickness,
-            measuredWidth/2 + textViewWidth/2,
-            measuredHeight
+            measuredWidth / 2 - tvNumCols.measuredWidth / 2,
+            measuredHeight - buttonThickness / 2 - tvNumCols.measuredHeight / 2 - paddingBottom,
+            measuredWidth / 2 + tvNumCols.measuredWidth / 2,
+            measuredHeight - buttonThickness / 2 + tvNumCols.measuredHeight / 2 - paddingBottom
         )
         btnIncCols.layout(
-            measuredWidth/2 + textViewWidth/2,
-            measuredHeight - buttonThickness,
-            measuredWidth/2 + textViewWidth/2 + buttonWidth,
-            measuredHeight
+            measuredWidth / 2 + textViewWidth / 2,
+            measuredHeight - buttonThickness - paddingBottom,
+            measuredWidth / 2 + textViewWidth / 2 + buttonWidth,
+            measuredHeight - paddingBottom
         )
         btnIncRows.layout(
-            measuredWidth - buttonThickness,
-            measuredHeight/2 - textViewWidth/2-buttonWidth,
-            measuredWidth,
-            measuredHeight/2 - textViewWidth/2
+            measuredWidth - buttonThickness - paddingRight,
+            measuredHeight / 2 - textViewWidth / 2 - buttonWidth,
+            measuredWidth - paddingRight,
+            measuredHeight / 2 - textViewWidth / 2
         )
         tvNumRows.layout(
-            measuredWidth - buttonThickness,
-            measuredHeight/2 - textViewWidth/2,
-            measuredWidth,
-            measuredHeight/2 + textViewWidth/2
+            measuredWidth - buttonThickness / 2 - paddingRight - tvNumRows.measuredWidth / 2,
+            measuredHeight / 2 - tvNumRows.measuredHeight / 2,
+            measuredWidth - buttonThickness / 2 - paddingRight + tvNumRows.measuredWidth / 2,
+            measuredHeight / 2 + tvNumRows.measuredHeight / 2
         )
         btnDecRows.layout(
-            measuredWidth - buttonThickness,
-            measuredHeight/2 + textViewWidth/2,
-            measuredWidth,
-            measuredHeight/2 + textViewWidth/2 + buttonWidth
+            measuredWidth - buttonThickness - paddingRight,
+            measuredHeight / 2 + textViewWidth / 2,
+            measuredWidth - paddingRight,
+            measuredHeight / 2 + textViewWidth / 2 + buttonWidth
         )
         btnDecRowsCols.layout(
-            0,
-            measuredHeight - buttonThickness,
-            buttonThickness,
-            measuredHeight
+            paddingLeft,
+            measuredHeight - buttonThickness - paddingBottom,
+            buttonThickness + paddingLeft,
+            measuredHeight - paddingBottom
         )
         btnIncRowsCols.layout(
-            measuredWidth - buttonThickness,
-            0,
-            measuredWidth,
-            buttonThickness
+            measuredWidth - buttonThickness - paddingRight,
+            paddingTop,
+            measuredWidth - paddingRight,
+            buttonThickness + paddingTop
         )
+
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
 
         val heightM: Int
         val widthM: Int
+
         if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
             widthM = View.getDefaultSize(suggestedMinimumWidth, widthMeasureSpec)
             heightM = min(
@@ -444,12 +464,15 @@ class MatrixViewGroup : ViewGroup, View.OnClickListener {
             heightM = View.getDefaultSize(suggestedMinimumHeight, heightMeasureSpec)
             widthM = heightMeasureSpec
         }
-        buttonThickness = heightM / 12
-        val cellHeight: Int = (heightM - spacing * (numRows - 1) - paddingTop -
+        val cellHeight: Int = (heightM - spacing * (numRows - 1) - 2 * innerPadding - paddingTop -
                 paddingBottom - buttonThickness * 2) / numRows
-        val cellWidth: Int = (widthM - spacing * (numColumns - 1) - paddingLeft -
+        val cellWidth: Int = (widthM - spacing * (numColumns - 1) - 2 * innerPadding - paddingLeft -
                 paddingRight - buttonThickness * 2) / numColumns
         cellSize = min(cellHeight, cellWidth).toFloat()
+        measureChild(tvNumRows, widthMeasureSpec, heightMeasureSpec)
+        measureChild(tvNumCols, widthMeasureSpec, heightMeasureSpec)
         setMeasuredDimension(widthM, heightM)
     }
+
+
 }

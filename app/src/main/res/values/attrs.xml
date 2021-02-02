@@ -16,6 +16,7 @@
     </declare-styleable>
     <declare-styleable name="FractionViewLayout">
         <attr name="color" format="color"/>
+        <attr name="text_color" format="color"/>
         <attr name="border_width" format="integer"/>
         <attr name="fraction_space" format="dimension"/>
         <attr name="numerator" format="integer"/>
