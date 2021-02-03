@@ -9,7 +9,7 @@ import ru.serzh272.matrixmvvm.views.MatrixViewGroup
 @ExperimentalUnsignedTypes
 class ViewPagerAdapter : PagerAdapter {
     lateinit var matrixViews:List<MatrixViewGroup>
-    val titles = listOf("Matrix1", "Matrix2", "Result")
+    val titles = listOf("A", "B", "Result")
     constructor(context: Context){
         matrixViews = listOf(MatrixViewGroup(context, null),MatrixViewGroup(context, null), MatrixViewGroup(context, null))
     }

@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.content.Context
 import android.content.res.ColorStateList
 import android.content.res.Configuration
+import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.Point
 import android.text.InputType
@@ -11,11 +12,14 @@ import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.EditorInfo
 import android.widget.*
 
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
+import androidx.core.view.children
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.textview.MaterialTextView
 import ru.serzh272.matrix.*
@@ -135,36 +139,12 @@ class MatrixViewGroup @JvmOverloads constructor(
             text = "$numRows"
 
         }
-
-        mEditText.inputType = InputType.TYPE_NULL
-        mEditText.inputType = InputType.TYPE_CLASS_DATETIME
-        mEditText.setBackgroundColor(Color.WHITE)
         for (i in 0 until numRows) {
             for (j in 0 until numColumns) {
                 mFractionViews[i][j].mFraction = mMatrix[i, j]
                 mFractionViews[i][j].setOnClickListener(this)
                 addView(mFractionViews[i][j])
             }
-        }
-    }
-
-    fun showEditText(fv: FractionView) {
-        mEditText.setText(fv.toString())
-        mEditText.layout(fv.left, fv.top, fv.right, fv.bottom)
-        if (indexOfChild(mEditText) != -1) {
-            removeView(mEditText)
-            addView(mEditText)
-        } else {
-            addView(mEditText)
-        }
-    }
-
-    fun hideEditText() {
-        if (indexOfChild(mEditText) != -1) {
-            mFractionViews[currentPos.x][currentPos.y].mFraction.setFromString(mEditText.text.toString())
-            removeView(mEditText)
-            currentPos.x = 0
-            currentPos.y = 0
         }
     }
 
@@ -291,30 +271,47 @@ class MatrixViewGroup @JvmOverloads constructor(
         removeColumnAt(numColumns - 1)
     }
 
-    fun updateFractionView(r: Int, c: Int) {
-        mFractionViews[r][c].invalidate()
-    }
     /*
     override fun transpose() {
         TODO("Not yet implemented")
     }*/
-    fun showAlertInputDialog(frV:FractionView):String{
-        val textInpLt = TextInputLayout(context)
-        val input = EditText(context)
-        input.setText(frV.toString())
+    private fun showAlertInputDialog(frV:FractionView){
+        val textInpLt = inflate(context, R.layout.item_input_dialog, null) as TextInputLayout
+        val input = textInpLt.editText
+        //input?.inputType = InputType.TYPE_NULL
+        input?.inputType = InputType.TYPE_CLASS_DATETIME or InputType.TYPE_DATETIME_VARIATION_DATE
+        input?.imeOptions = EditorInfo.IME_ACTION_DONE
+
+        input?.setText(frV.toString())
+        textInpLt.setPadding(context.dpToPx(18).toInt(),
+            0,
+            context.dpToPx(18).toInt(),
+            0)
         textInpLt.hint = "Элемент (${frV.pos.x};${frV.pos.y})"
-        textInpLt.addView(input)
+        textInpLt.isHintAnimationEnabled = true
         val alert = AlertDialog.Builder(context)
             .setTitle("Введите число")
             .setView(textInpLt)
             .setPositiveButton("Ok"){dialog, _ ->
-                frV.mFraction.setFromString(input.text.toString())
+                frV.mFraction = Fraction(input?.text.toString())
                 frV.invalidate()
                 dialog.cancel()
             }
             .create()
+        input?.setOnEditorActionListener { v, actionId, event ->
+            when (actionId) {
+                EditorInfo.IME_ACTION_DONE -> {
+                    if (v is TextInputEditText) {
+                        frV.mFraction = Fraction(v.text.toString())
+                        alert.cancel()
+                    }
+                    false
+                }
+                else -> false
+            }
+        }
         alert.show()
-        return input.text.toString()
+
     }
 
     @ExperimentalUnsignedTypes
