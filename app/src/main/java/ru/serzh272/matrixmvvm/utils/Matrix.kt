@@ -245,6 +245,15 @@ class Matrix(r: Int = 3, c: Int = 3) {
         this.numColumns = m.numColumns
     }
 
+    fun getTranspose():Matrix {
+        val m = Matrix(this.numColumns, this.numRows)
+        for (i in 0 until this.numRows) {
+            for (j in 0 until this.numColumns) {
+                m[j, i] = this[i, j]
+            }
+        }
+        return m
+    }
 
     fun copy(): Matrix {
         val res = Matrix(this.numRows, this.numColumns)
@@ -381,8 +390,8 @@ class Matrix(r: Int = 3, c: Int = 3) {
             }
             return when (type) {
                 TransformType.INVERSE -> x
-                TransformType.BOTTOM_TRIANGLE -> b
-                TransformType.TOP_TRIANGLE -> c
+                TransformType.LOWER_TRIANGULAR -> b
+                TransformType.UPPER_TRIANGULAR -> c
             }
         }
     }
@@ -463,7 +472,7 @@ class Matrix(r: Int = 3, c: Int = 3) {
      */
     enum class TransformType {
         INVERSE,
-        TOP_TRIANGLE,
-        BOTTOM_TRIANGLE
+        UPPER_TRIANGULAR,
+        LOWER_TRIANGULAR
     }
 }
