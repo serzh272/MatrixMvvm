@@ -2,12 +2,14 @@ package ru.serzh272.matrixmvvm.views
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
 import androidx.fragment.app.FragmentPagerAdapter
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager.widget.PagerAdapter
 import androidx.viewpager.widget.ViewPager
 import com.google.android.material.tabs.TabLayout
+import ru.serzh272.matrixmvvm.R
 import ru.serzh272.matrixmvvm.adapters.ViewPagerAdapter
 import ru.serzh272.matrixmvvm.databinding.ActivityMainBinding
 import ru.serzh272.matrixmvvm.utils.Matrix
@@ -29,6 +31,13 @@ class MainActivity : AppCompatActivity() {
         binding.tabLayout.setupWithViewPager(binding.viewPager)
         val viewPagerAdapter = ViewPagerAdapter(this)
         viewPager.adapter = viewPagerAdapter
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        val inflater = menuInflater
+        inflater.inflate(R.menu.menu, menu)
+
+        return true
     }
     private fun updateData(it: List<Matrix>?) {
 
