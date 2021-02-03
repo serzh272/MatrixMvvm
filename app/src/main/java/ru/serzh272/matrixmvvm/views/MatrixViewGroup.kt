@@ -7,12 +7,15 @@ import android.content.res.Configuration
 import android.content.res.Resources
 import android.graphics.Color
 import android.graphics.Point
+import android.hardware.input.InputManager
 import android.text.InputType
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.*
 
 import androidx.core.content.ContextCompat
@@ -283,6 +286,7 @@ class MatrixViewGroup @JvmOverloads constructor(
         input?.imeOptions = EditorInfo.IME_ACTION_DONE
 
         input?.setText(frV.toString())
+        input?.selectAll()
         textInpLt.setPadding(context.dpToPx(18).toInt(),
             0,
             context.dpToPx(18).toInt(),
@@ -290,10 +294,11 @@ class MatrixViewGroup @JvmOverloads constructor(
         textInpLt.hint = "Элемент (${frV.pos.x};${frV.pos.y})"
         textInpLt.isHintAnimationEnabled = true
         val alert = AlertDialog.Builder(context)
-            .setTitle("Введите число")
+            .setTitle("Введите значение")
             .setView(textInpLt)
             .setPositiveButton("Ok"){dialog, _ ->
                 frV.mFraction = Fraction(input?.text.toString())
+
                 frV.invalidate()
                 dialog.cancel()
             }
@@ -310,7 +315,11 @@ class MatrixViewGroup @JvmOverloads constructor(
                 else -> false
             }
         }
+        alert.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
         alert.show()
+
+        //val keyboard = alert.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        //keyboard.showSoftInput(input, 0)
 
     }
 

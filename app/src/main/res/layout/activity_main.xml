@@ -20,7 +20,7 @@
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tab_layout"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/spacing_maximum_72"
+        android:layout_height="48dp"
         android:layout_marginTop="@dimen/spacing_maximum_72"
         app:tabMode= "fixed"
         app:tabIndicatorFullWidth="true">
@@ -29,7 +29,7 @@
         android:id="@+id/view_pager"
         android:layout_width="match_parent"
         android:layout_height="387dp"
-        android:layout_marginTop="144dp"
+        android:layout_marginTop="120dp"
         android:padding="8dp"
         />
 
