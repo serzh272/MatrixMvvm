@@ -20,7 +20,7 @@
     <com.google.android.material.tabs.TabLayout
         android:id="@+id/tab_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/app_bar_size_72"
         android:layout_marginTop="@dimen/app_bar_size_72"
         app:tabMode= "fixed"
         app:tabIndicatorFullWidth="true">

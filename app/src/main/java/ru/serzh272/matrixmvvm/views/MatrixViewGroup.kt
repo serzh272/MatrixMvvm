@@ -1,5 +1,6 @@
 package ru.serzh272.matrixmvvm.views
 
+import android.app.AlertDialog
 import android.content.Context
 import android.content.res.ColorStateList
 import android.content.res.Configuration
@@ -15,6 +16,7 @@ import android.widget.*
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.textview.MaterialTextView
 import ru.serzh272.matrix.*
 import ru.serzh272.matrixmvvm.R
@@ -296,37 +298,56 @@ class MatrixViewGroup @JvmOverloads constructor(
     override fun transpose() {
         TODO("Not yet implemented")
     }*/
-
+    fun showAlertInputDialog(frV:FractionView):String{
+        val textInpLt = TextInputLayout(context)
+        val input = EditText(context)
+        input.setText(frV.toString())
+        textInpLt.hint = "Элемент (${frV.pos.x};${frV.pos.y})"
+        textInpLt.addView(input)
+        val alert = AlertDialog.Builder(context)
+            .setTitle("Введите число")
+            .setView(textInpLt)
+            .setPositiveButton("Ok"){dialog, _ ->
+                frV.mFraction.setFromString(input.text.toString())
+                frV.invalidate()
+                dialog.cancel()
+            }
+            .create()
+        alert.show()
+        return input.text.toString()
+    }
 
     @ExperimentalUnsignedTypes
     override fun onClick(v: View?) {
         when (v) {
             is FractionView -> {
-                mFractionViews[currentPos.x][currentPos.y].mFraction.setFromString(mEditText.text.toString())
-                mFractionViews[currentPos.x][currentPos.y].invalidate()
                 currentPos.x = v.pos.x
                 currentPos.y = v.pos.y
-                showEditText(v)
+                showAlertInputDialog(v)
+                //v.invalidate()
+
+                //showEditText(v)
+
             }
             btnDecCols -> {
                 if (numColumns > MIN_DIMENSION) {
                     removeColumn()
                 }
-                hideEditText()
+                //hideEditText()
                 //Toast.makeText(context, "$numRows x $numColumns", Toast.LENGTH_SHORT).show()
             }
             btnIncCols -> {
                 if (numColumns < MAX_DIMENSION) {
                     addColumn()
                 }
-                hideEditText()
+                //hideEditText()
                 //Toast.makeText(context, "$numRows x $numColumns", Toast.LENGTH_SHORT).show()
             }
             btnDecRows -> {
                 if (numRows > MIN_DIMENSION) {
                     removeRow()
                 }
-                hideEditText()
+                //hideEditText()
                 //Toast.makeText(context, "$numRows x $numColumns", Toast.LENGTH_SHORT).show()
             }
             btnIncRows -> {
@@ -334,7 +355,7 @@ class MatrixViewGroup @JvmOverloads constructor(
                 if (numRows < MAX_DIMENSION) {
                     addRow()
                 }
-                hideEditText()
+                //hideEditText()
                 //Toast.makeText(context, "$numRows x $numColumns", Toast.LENGTH_SHORT).show()
             }
             btnIncRowsCols -> {
@@ -342,7 +363,7 @@ class MatrixViewGroup @JvmOverloads constructor(
                     addRow()
                     addColumn()
                 }
-                hideEditText()
+                //hideEditText()
                 //Toast.makeText(context, "$numRows x $numColumns", Toast.LENGTH_SHORT).show()
             }
             btnDecRowsCols -> {
@@ -350,7 +371,7 @@ class MatrixViewGroup @JvmOverloads constructor(
                     removeRow()
                     removeColumn()
                 }
-                hideEditText()
+                //hideEditText()
             }
         }
         if (v is MaterialButton && v !is FractionView ) {

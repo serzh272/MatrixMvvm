@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/determinant_item"
+        android:title="Determinant"/>
+    <item
+        android:id="@+id/summ_item"
+        android:title="A + B"/>
+    <item
+        android:id="@+id/diff_item"
+        android:title="A - B"/>
+    <item
+        android:id="@+id/multiply_item"
+        android:title="A × B"/>
+    <item
+        android:id="@+id/inverse_item"
+        android:title="Inverse"/>
+    <item
+        android:id="@+id/frobenius_item"
+        android:title="Frobenius"/>
+    <item
+        android:id="@+id/upper_triangular_item"
+        android:title="Upper triangular"/>
+    <item
+        android:id="@+id/lower_triangular_item"
+        android:title="Lower triangular"/>
+    <item
+        android:id="@+id/transpose_item"
+        android:title="Transpose"/>
+</menu>
