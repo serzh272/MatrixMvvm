@@ -10,6 +10,8 @@ import androidx.core.view.marginTop
 import com.google.android.material.button.MaterialButton
 import ru.serzh272.matrix.Fraction
 import ru.serzh272.matrixmvvm.R
+import ru.serzh272.matrixmvvm.extensions.dpToPx
+import kotlin.math.abs
 import kotlin.math.max
 
 @ExperimentalUnsignedTypes
@@ -116,10 +118,13 @@ class FractionView @JvmOverloads constructor(context: Context,
             var wdt:Float = max(bndNum.width().toFloat(), bndDen.width().toFloat())
             if (integ != 0){
                 integTxt = integ.toString()
-                p.getTextBounds(integTxt, 0, integTxt.length, bndInteg)
-                frSpan = bndInteg.width().toFloat()/2 +sp
-                integSpan = wdt/2 +sp
+
+            }else{
+                integTxt = if (numerator < 0) "-" else ""
             }
+            p.getTextBounds(integTxt, 0, integTxt.length, bndInteg)
+            frSpan = bndInteg.width().toFloat()/2 +sp
+            integSpan = wdt/2 +sp
             if ((bndInteg.width() + wdt + sp*8) > this.width){
                 val k:Float = (this.width.toFloat())/(bndInteg.width().toFloat() + wdt + sp*8)
                 p.textSize *= k
@@ -130,12 +135,12 @@ class FractionView @JvmOverloads constructor(context: Context,
                 sp *= k
                 p.getTextBounds(integTxt, 0, integTxt.length, bndInteg)
             }
-            if (integ != 0){
+            //if (integ != 0){
                 canvas.drawText(integTxt,anchor.x.toFloat() -integSpan,anchor.y.toFloat()+textHeight/2, p)
-            }
-            canvas.drawText(numerator.toString(),anchor.x.toFloat() + frSpan,anchor.y.toFloat()-sp, p)
+            //}
+            canvas.drawText(abs(numerator).toString(),anchor.x.toFloat() + frSpan,anchor.y.toFloat()-sp, p)
             canvas.drawText(denominator.toString(),anchor.x.toFloat() + frSpan,anchor.y.toFloat()+textHeight+sp, p)
-            p.strokeWidth = 3.0f
+            p.strokeWidth = context.dpToPx(2)
             canvas.drawLine(anchor.x.toFloat() - wdt/2+frSpan, anchor.y.toFloat(), anchor.x.toFloat() + wdt/2 + frSpan, anchor.y.toFloat(),p)
         }
     }
