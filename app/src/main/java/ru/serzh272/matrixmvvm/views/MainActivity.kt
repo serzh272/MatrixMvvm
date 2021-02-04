@@ -11,7 +11,9 @@ import androidx.viewpager.widget.ViewPager
 import ru.serzh272.matrixmvvm.R
 import ru.serzh272.matrixmvvm.adapters.ViewPagerAdapter
 import ru.serzh272.matrixmvvm.databinding.ActivityMainBinding
+import ru.serzh272.matrixmvvm.exceptions.MatrixDimensionsException
 import ru.serzh272.matrixmvvm.utils.Matrix
+import ru.serzh272.matrixmvvm.utils.MyToast
 import ru.serzh272.matrixmvvm.viewmodels.MatrixViewModel
 @ExperimentalUnsignedTypes
 class MainActivity : AppCompatActivity() {
@@ -60,7 +62,19 @@ class MainActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
             R.id.determinant_item -> {
-                Toast.makeText(this, viewModel.getMatr(viewPager.currentItem).determinant().toString(), Toast.LENGTH_SHORT).show()
+                if (MyToast.toast != null) {
+                    MyToast.toast!!.cancel()
+                }
+                try {
+                    MyToast.toast = Toast.makeText(
+                        this,
+                        viewModel.getMatr(viewPager.currentItem).determinant().toString(),
+                        Toast.LENGTH_LONG
+                    )
+                } catch (ex: MatrixDimensionsException) {
+                    MyToast.toast = Toast.makeText(this, ex.message, Toast.LENGTH_LONG)
+                }
+                MyToast.toast?.show()
             }
             R.id.summ_item -> {
                 viewModel.setMatr(2, viewModel.getMatr(0) + viewModel.getMatr(1))

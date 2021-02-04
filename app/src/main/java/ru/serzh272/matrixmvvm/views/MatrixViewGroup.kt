@@ -1,6 +1,7 @@
 package ru.serzh272.matrixmvvm.views
 
 import android.animation.LayoutTransition
+import android.animation.ValueAnimator
 import android.app.AlertDialog
 import android.content.Context
 import android.content.res.Configuration
@@ -9,6 +10,7 @@ import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
 import android.view.WindowManager
+import android.view.animation.LinearInterpolator
 import android.view.inputmethod.EditorInfo
 import android.widget.*
 import androidx.core.content.ContextCompat
@@ -20,6 +22,7 @@ import ru.serzh272.matrix.*
 import ru.serzh272.matrixmvvm.R
 import ru.serzh272.matrixmvvm.extensions.dpToPx
 import ru.serzh272.matrixmvvm.utils.Matrix
+import java.util.logging.Handler
 import kotlin.math.min
 
 @ExperimentalUnsignedTypes
@@ -230,6 +233,7 @@ class MatrixViewGroup @JvmOverloads constructor(
             addView(mFractionViews[numRows][j])
         }
         this.numRows++
+        listener?.onDataChanged(matrix)
     }
 
     @ExperimentalUnsignedTypes
@@ -253,6 +257,7 @@ class MatrixViewGroup @JvmOverloads constructor(
             addView(mFractionViews[i][numColumns])
         }
         this.numColumns++
+        listener?.onDataChanged(matrix)
     }
 
     fun removeRowAt(pos: Int) {
@@ -262,6 +267,7 @@ class MatrixViewGroup @JvmOverloads constructor(
             }
             this.mFractionViews.removeAt(pos)
             this.numRows--
+            listener?.onDataChanged(matrix)
         } else {
             throw IndexOutOfBoundsException()
         }
@@ -274,6 +280,7 @@ class MatrixViewGroup @JvmOverloads constructor(
                 mFractionViews[i].removeAt(pos)
             }
             this.numColumns--
+            listener?.onDataChanged(matrix)
         } else {
             throw IndexOutOfBoundsException()
         }
@@ -293,6 +300,7 @@ class MatrixViewGroup @JvmOverloads constructor(
 
     fun removeRow() {
         removeRowAt(numRows - 1)
+
     }
 
     fun removeColumn() {
@@ -370,40 +378,35 @@ class MatrixViewGroup @JvmOverloads constructor(
             btnDecCols -> {
                 if (numColumns > MIN_DIMENSION) {
                     removeColumn()
-                    listener?.onDataChanged(matrix)
                 }
             }
             btnIncCols -> {
                 if (numColumns < MAX_DIMENSION) {
                     addColumn()
-                    listener?.onDataChanged(matrix)
                 }
             }
             btnDecRows -> {
                 if (numRows > MIN_DIMENSION) {
                     removeRow()
-                    listener?.onDataChanged(matrix)
+
                 }
             }
             btnIncRows -> {
                 //addRow()
                 if (numRows < MAX_DIMENSION) {
                     addRow()
-                    listener?.onDataChanged(matrix)
                 }
             }
             btnIncRowsCols -> {
                 if (numRows < MAX_DIMENSION && numColumns < MAX_DIMENSION) {
                     addRow()
                     addColumn()
-                    listener?.onDataChanged(matrix)
                 }
             }
             btnDecRowsCols -> {
                 if (numRows > MIN_DIMENSION && numColumns > MIN_DIMENSION) {
                     removeRow()
                     removeColumn()
-                    listener?.onDataChanged(matrix)
                 }
             }
         }

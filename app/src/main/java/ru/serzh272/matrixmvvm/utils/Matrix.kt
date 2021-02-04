@@ -1,6 +1,8 @@
 package ru.serzh272.matrixmvvm.utils
 
 import ru.serzh272.matrix.Fraction
+import ru.serzh272.matrixmvvm.exceptions.MatrixDimensionsException
+import kotlin.jvm.Throws
 import kotlin.math.sqrt
 
 @ExperimentalUnsignedTypes
@@ -320,7 +322,7 @@ class Matrix(r: Int = 3, c: Int = 3) {
             }
             return d
         } else {
-            throw Exception("Matrix must be squared")
+            throw MatrixDimensionsException("Matrix must be squared")
         }
     }
     /** Set square matrix to identity matrix.
