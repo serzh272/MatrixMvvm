@@ -369,24 +369,18 @@ class MatrixViewGroup @JvmOverloads constructor(
                     removeColumn()
                     listener?.onDataChanged(matrix)
                 }
-                //hideEditText()
-                //Toast.makeText(context, "$numRows x $numColumns", Toast.LENGTH_SHORT).show()
             }
             btnIncCols -> {
                 if (numColumns < MAX_DIMENSION) {
                     addColumn()
                     listener?.onDataChanged(matrix)
                 }
-                //hideEditText()
-                //Toast.makeText(context, "$numRows x $numColumns", Toast.LENGTH_SHORT).show()
             }
             btnDecRows -> {
                 if (numRows > MIN_DIMENSION) {
                     removeRow()
                     listener?.onDataChanged(matrix)
                 }
-                //hideEditText()
-                //Toast.makeText(context, "$numRows x $numColumns", Toast.LENGTH_SHORT).show()
             }
             btnIncRows -> {
                 //addRow()
@@ -394,8 +388,6 @@ class MatrixViewGroup @JvmOverloads constructor(
                     addRow()
                     listener?.onDataChanged(matrix)
                 }
-                //hideEditText()
-                //Toast.makeText(context, "$numRows x $numColumns", Toast.LENGTH_SHORT).show()
             }
             btnIncRowsCols -> {
                 if (numRows < MAX_DIMENSION && numColumns < MAX_DIMENSION) {
@@ -403,8 +395,6 @@ class MatrixViewGroup @JvmOverloads constructor(
                     addColumn()
                     listener?.onDataChanged(matrix)
                 }
-                //hideEditText()
-                //Toast.makeText(context, "$numRows x $numColumns", Toast.LENGTH_SHORT).show()
             }
             btnDecRowsCols -> {
                 if (numRows > MIN_DIMENSION && numColumns > MIN_DIMENSION) {
@@ -412,17 +402,17 @@ class MatrixViewGroup @JvmOverloads constructor(
                     removeColumn()
                     listener?.onDataChanged(matrix)
                 }
-                //hideEditText()
             }
         }
         if (v is MaterialButton && v !is FractionView ) {
-            Toast.makeText(context, "$numRows x $numColumns", Toast.LENGTH_SHORT).show()
             tvNumRows.text = "$numRows"
             tvNumCols.text = "$numColumns"
         }
     }
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
+        buttonWidth = measuredWidth/3
+
         val leftPadding: Int = (measuredWidth - paddingLeft - paddingRight -
                 numColumns * cellSize.toInt() - (numColumns - 1) * spacing -
                 buttonThickness * 2) / 2
@@ -502,33 +492,32 @@ class MatrixViewGroup @JvmOverloads constructor(
 
     }
 
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-
-        var heightM: Int
-        var widthM: Int
-
-        if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            widthM = View.getDefaultSize(suggestedMinimumWidth, widthMeasureSpec)
-            heightM = min(
-                widthMeasureSpec, View.getDefaultSize(
-                    suggestedMinimumHeight,
-                    heightMeasureSpec
-                )
-            )
-            widthM = heightM
-
-        } else {
-            heightM = View.getDefaultSize(suggestedMinimumHeight, heightMeasureSpec)
-            widthM = heightMeasureSpec
+    fun resolveSize(spec: Int): Int{
+        return when(MeasureSpec.getMode(spec)){
+            MeasureSpec.UNSPECIFIED -> context.dpToPx(500).toInt()
+            MeasureSpec.AT_MOST -> MeasureSpec.getSize(spec)
+            MeasureSpec.EXACTLY -> MeasureSpec.getSize(spec)
+            else -> MeasureSpec.getSize(spec)
         }
-        val cellHeight: Int = (heightM - spacing * (numRows - 1) - 2 * innerPadding - paddingTop -
+    }
+
+
+    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+        var initSize: Int = resolveSize(widthMeasureSpec)
+        if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            initSize = resolveSize(widthMeasureSpec)
+        } else {
+            initSize = resolveSize(heightMeasureSpec)
+        }
+        val cellHeight: Int = (initSize - spacing * (numRows - 1) - 2 * innerPadding - paddingTop -
                 paddingBottom - buttonThickness * 2) / numRows
-        val cellWidth: Int = (widthM - spacing * (numColumns - 1) - 2 * innerPadding - paddingLeft -
+        val cellWidth: Int = (initSize - spacing * (numColumns - 1) - 2 * innerPadding - paddingLeft -
                 paddingRight - buttonThickness * 2) / numColumns
         cellSize = min(cellHeight, cellWidth).toFloat()
         measureChild(tvNumRows, widthMeasureSpec, heightMeasureSpec)
         measureChild(tvNumCols, widthMeasureSpec, heightMeasureSpec)
-        setMeasuredDimension(widthM, heightM)
+        buttonThickness = initSize/12
+        setMeasuredDimension(initSize, initSize)
     }
     interface OnDataChangedListener{
         fun onDataChanged(matrix: Matrix)
