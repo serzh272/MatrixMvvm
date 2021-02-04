@@ -504,8 +504,8 @@ class MatrixViewGroup @JvmOverloads constructor(
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
 
-        val heightM: Int
-        val widthM: Int
+        var heightM: Int
+        var widthM: Int
 
         if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
             widthM = View.getDefaultSize(suggestedMinimumWidth, widthMeasureSpec)
@@ -515,6 +515,8 @@ class MatrixViewGroup @JvmOverloads constructor(
                     heightMeasureSpec
                 )
             )
+            widthM = heightM
+
         } else {
             heightM = View.getDefaultSize(suggestedMinimumHeight, heightMeasureSpec)
             widthM = heightMeasureSpec

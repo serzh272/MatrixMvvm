@@ -8,6 +8,7 @@ import android.view.View
 import androidx.core.content.res.ResourcesCompat
 import androidx.core.view.marginTop
 import com.google.android.material.button.MaterialButton
+import com.google.android.material.color.MaterialColors
 import ru.serzh272.matrix.Fraction
 import ru.serzh272.matrixmvvm.R
 import ru.serzh272.matrixmvvm.extensions.dpToPx
@@ -40,7 +41,7 @@ class FractionView @JvmOverloads constructor(context: Context,
             //presenter.mFraction.integ = a.getInteger(R.styleable.FractionViewLayout_integ, 0).toLong()
             mode = a.getInteger(R.styleable.FractionViewLayout_mode, 1)
             backColor = a.getColor(R.styleable.FractionViewLayout_color, Color.WHITE)
-            fractionTextColor = a.getColor(R.styleable.FractionViewLayout_text_color, ResourcesCompat.getColor(resources, R.color.color_on_primary, context.theme))
+            fractionTextColor = a.getColor(R.styleable.FractionViewLayout_text_color, MaterialColors.getColor(context, R.attr.colorOnPrimary, Color.WHITE))
             sp = a.getDimension(R.styleable.FractionViewLayout_fraction_space, 2.0f)
         }
         finally {
