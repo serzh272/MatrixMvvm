@@ -1,10 +1,10 @@
 package ru.serzh272.matrixmvvm.views
 
+import android.animation.LayoutTransition
 import android.app.AlertDialog
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Color
-import android.text.InputType
 import android.util.AttributeSet
 import android.view.Gravity
 import android.view.View
@@ -92,9 +92,9 @@ class MatrixViewGroup @JvmOverloads constructor(
     private var cellSize: Float = 50.0f
     var cellsColor: Int = Color.WHITE
     private var btnDecCols: MaterialButton = MaterialButton(context)
-    private var btnIncRows: MaterialButton = MaterialButton(context)
-    private var btnIncCols: MaterialButton = MaterialButton(context)
     private var btnDecRows: MaterialButton = MaterialButton(context)
+    private var btnIncCols: MaterialButton = MaterialButton(context)
+    private var btnIncRows: MaterialButton = MaterialButton(context)
     private var btnIncRowsCols: MaterialButton = MaterialButton(context)
     private var btnDecRowsCols: MaterialButton = MaterialButton(context)
     private var tvNumRows: MaterialTextView = MaterialTextView(context)
@@ -106,6 +106,9 @@ class MatrixViewGroup @JvmOverloads constructor(
     }
 
     init {
+        val ltTrans = LayoutTransition()
+        ltTrans.setDuration(LayoutTransition.DISAPPEARING,100)
+        layoutTransition = ltTrans
         initAttrs(context, attrs)
         mFractionViews = MutableList(numRows) { MutableList(numColumns) { FractionView(context) } }
         with(btnIncRowsCols) {
@@ -119,19 +122,19 @@ class MatrixViewGroup @JvmOverloads constructor(
             addView(this)
             //setBackgroundColor(ContextCompat.getColor(context, R.color.color_primary))
         }
-        with(btnDecRows) {
+        with(btnIncRows) {
             this.setBackgroundResource(R.drawable.btn_down_bg)
             addView(this)
 
             //setBackgroundColor(ContextCompat.getColor(context, R.color.color_primary))
         }
-        btnDecRows.setOnClickListener(this)
-        with(btnIncRows) {
+        btnIncRows.setOnClickListener(this)
+        with(btnDecRows) {
             this.setBackgroundResource(R.drawable.btn_up_bg)
             addView(this)
             //setBackgroundColor(ContextCompat.getColor(context, R.color.color_primary))
         }
-        btnIncRows.setOnClickListener(this)
+        btnDecRows.setOnClickListener(this)
         with(btnDecCols) {
             this.setBackgroundResource(R.drawable.btn_left_bg)
             addView(this)
@@ -412,7 +415,6 @@ class MatrixViewGroup @JvmOverloads constructor(
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
         buttonWidth = measuredWidth/3
-
         val leftPadding: Int = (measuredWidth - paddingLeft - paddingRight -
                 numColumns * cellSize.toInt() - (numColumns - 1) * spacing -
                 buttonThickness * 2) / 2
@@ -436,7 +438,7 @@ class MatrixViewGroup @JvmOverloads constructor(
             measuredWidth,
             measuredHeight / 2 + buttonWidth / 2
         )
-        btnIncRows.layout(
+        btnDecRows.layout(
             measuredWidth / 2 - buttonWidth / 2,
             0,
             measuredWidth / 2 + buttonWidth / 2,
@@ -448,7 +450,7 @@ class MatrixViewGroup @JvmOverloads constructor(
 //            measuredWidth - buttonThickness / 2 - paddingRight + tvNumRows.measuredWidth / 2,
 //            measuredHeight / 2 + tvNumRows.measuredHeight / 2
 //        )
-        btnDecRows.layout(
+        btnIncRows.layout(
             measuredWidth / 2 - buttonWidth / 2,
             measuredHeight - buttonThickness,
             measuredWidth / 2 + buttonWidth / 2,
@@ -526,5 +528,4 @@ class MatrixViewGroup @JvmOverloads constructor(
     fun setOnDataChangedListener(listener: OnDataChangedListener){
         this.listener = listener
     }
-
 }

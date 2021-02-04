@@ -1,12 +1,11 @@
 package ru.serzh272.matrixmvvm.views
 
+import android.animation.ValueAnimator
 import android.content.Context
 import android.content.res.TypedArray
 import android.graphics.*
 import android.util.AttributeSet
-import android.view.View
-import androidx.core.content.res.ResourcesCompat
-import androidx.core.view.marginTop
+import android.view.animation.LinearInterpolator
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors
 import ru.serzh272.matrix.Fraction
@@ -23,6 +22,7 @@ class FractionView @JvmOverloads constructor(context: Context,
     var fractionTextColor: Int = Color.WHITE
     var backColor: Int = Color.LTGRAY
     var mode: Int = 2
+    var size:Int = 0
     var mFraction = Fraction(2, 3u)
     private var sp:Float = 0.0f
     private var anchor: Point = Point(0, 0)
@@ -31,6 +31,7 @@ class FractionView @JvmOverloads constructor(context: Context,
         initAttrs(context,attrs)
         setBackgroundResource(R.drawable.button_bg)
     }
+
     private fun initAttrs(context: Context?, attrs: AttributeSet?){
         val a:TypedArray = context!!.theme.obtainStyledAttributes(attrs,
             R.styleable.FractionViewLayout, 0,0)
@@ -49,16 +50,15 @@ class FractionView @JvmOverloads constructor(context: Context,
         }
     }
 
-
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
         showFraction(canvas!!, mFraction)
     }
 
+
     fun showFraction() {
         invalidate()
     }
-
 
     fun showFraction(canvas: Canvas, fraction: Fraction) {
         val p = Paint(Paint.ANTI_ALIAS_FLAG)
@@ -145,7 +145,6 @@ class FractionView @JvmOverloads constructor(context: Context,
             canvas.drawLine(anchor.x.toFloat() - wdt/2+frSpan, anchor.y.toFloat(), anchor.x.toFloat() + wdt/2 + frSpan, anchor.y.toFloat(),p)
         }
     }
-
 
     override fun toString(): String {
         return mFraction.toString()
