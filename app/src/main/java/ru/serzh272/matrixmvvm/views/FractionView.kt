@@ -151,5 +151,4 @@ class FractionView @JvmOverloads constructor(context: Context,
     override fun toString(): String {
         return mFraction.toString()
     }
-
 }
