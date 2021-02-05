@@ -7,7 +7,9 @@ import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Color
 import android.util.AttributeSet
+import android.util.Log
 import android.view.Gravity
+import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.view.animation.LinearInterpolator
@@ -40,6 +42,7 @@ class MatrixViewGroup @JvmOverloads constructor(
         private const val MIN_DIMENSION = 1
     }
 
+    private var initSize: Int = 0
     private var innerPadding: Int = context.dpToPx(DEFAULT_SPACING).toInt()
     var matrix = Matrix()
         get() {
@@ -89,6 +92,7 @@ class MatrixViewGroup @JvmOverloads constructor(
     var mode = 1
     var listener:OnDataChangedListener? = null
     var spacing: Int = context.dpToPx(DEFAULT_SPACING).toInt()
+    var lPadding = 0
     private var buttonThickness: Int = context.dpToPx(DEFAULT_BUTTON_THICKNESS).toInt()
     private var buttonWidth: Int = context.dpToPx(DEFAULT_BUTTON_WIDTH).toInt()
     private var textViewWidth: Int = context.dpToPx(DEFAULT_TEXTVIEW_WIDTH).toInt()
@@ -115,13 +119,13 @@ class MatrixViewGroup @JvmOverloads constructor(
         initAttrs(context, attrs)
         mFractionViews = MutableList(numRows) { MutableList(numColumns) { FractionView(context) } }
         with(btnIncRowsCols) {
-            this.setBackgroundResource(R.drawable.btn_right_top_bg)
+            this.setBackgroundResource(R.drawable.btn_right_bottom_bg)
             addView(this)
             //setBackgroundColor(ContextCompat.getColor(context, R.color.color_primary))
         }
         btnIncRowsCols.setOnClickListener(this)
         with(btnDecRowsCols) {
-            this.setBackgroundResource(R.drawable.btn_left_bottom_bg)
+            this.setBackgroundResource(R.drawable.btn_left_top_bg)
             addView(this)
             //setBackgroundColor(ContextCompat.getColor(context, R.color.color_primary))
         }
@@ -220,6 +224,7 @@ class MatrixViewGroup @JvmOverloads constructor(
         for (j in 0 until numColumns) {
             mFractionViews[pos][j].mFraction = Fraction()
             addView(mFractionViews[pos][j])
+            mFractionViews[pos][j].z = context.dpToPx(3)
         }
         this.numRows++
     }
@@ -231,6 +236,7 @@ class MatrixViewGroup @JvmOverloads constructor(
         for (j in 0 until numColumns) {
             mFractionViews[numRows][j].mFraction = Fraction()
             addView(mFractionViews[numRows][j])
+            mFractionViews[numRows][j].z = context.dpToPx(3)
         }
         this.numRows++
         listener?.onDataChanged(matrix)
@@ -244,6 +250,7 @@ class MatrixViewGroup @JvmOverloads constructor(
                 FractionView(context)
             )
             addView(mFractionViews[i][pos])
+            mFractionViews[i][pos].z = context.dpToPx(3)
         }
         this.numColumns++
     }
@@ -255,6 +262,7 @@ class MatrixViewGroup @JvmOverloads constructor(
                 FractionView(context)
             )
             addView(mFractionViews[i][numColumns])
+            mFractionViews[i][numColumns].z = context.dpToPx(3)
         }
         this.numColumns++
         listener?.onDataChanged(matrix)
@@ -364,10 +372,8 @@ class MatrixViewGroup @JvmOverloads constructor(
         alert.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE)
         alert.show()
         input?.requestFocus()
-        //val keyboard = alert.context.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
-        //keyboard.showSoftInput(input, 0)
-
     }
+
 
     @ExperimentalUnsignedTypes
     override fun onClick(v: View?) {
@@ -383,6 +389,7 @@ class MatrixViewGroup @JvmOverloads constructor(
             btnIncCols -> {
                 if (numColumns < MAX_DIMENSION) {
                     addColumn()
+                    requestLayout()
                 }
             }
             btnDecRows -> {
@@ -416,61 +423,62 @@ class MatrixViewGroup @JvmOverloads constructor(
         }
     }
 
+
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
-        buttonWidth = measuredWidth/3
-        val leftPadding: Int = (measuredWidth - paddingLeft - paddingRight -
+        buttonWidth = initSize/3
+        val leftPadding: Int = (initSize - paddingLeft - paddingRight -
                 numColumns * cellSize.toInt() - (numColumns - 1) * spacing -
-                buttonThickness * 2) / 2
+                buttonThickness * 2) / 2 + lPadding
         val topPadding: Int = (measuredHeight - paddingTop - paddingBottom -
                 numRows * cellSize.toInt() - (numRows - 1) * spacing - buttonThickness * 2) / 2
         btnDecCols.layout(
-            0,
-            measuredHeight / 2 - buttonWidth / 2,
-            buttonThickness,
+            lPadding,
+            measuredHeight / 2 - buttonWidth / 2 + lPadding,
+            buttonThickness + lPadding,
             measuredHeight / 2 + buttonWidth / 2
         )
 //        tvNumCols.layout(
-//            measuredWidth / 2 - tvNumCols.measuredWidth / 2,
+//            initSize / 2 - tvNumCols.initSize / 2,
 //            measuredHeight - buttonThickness / 2 - tvNumCols.measuredHeight / 2 - paddingBottom,
-//            measuredWidth / 2 + tvNumCols.measuredWidth / 2,
+//            initSize / 2 + tvNumCols.initSize / 2,
 //            measuredHeight - buttonThickness / 2 + tvNumCols.measuredHeight / 2 - paddingBottom
 //        )
         btnIncCols.layout(
-            measuredWidth - buttonThickness,
+            initSize - buttonThickness + lPadding,
             measuredHeight / 2 - buttonWidth / 2,
-            measuredWidth,
+            initSize + lPadding,
             measuredHeight / 2 + buttonWidth / 2
         )
         btnDecRows.layout(
-            measuredWidth / 2 - buttonWidth / 2,
+            initSize / 2 - buttonWidth / 2 + lPadding,
             0,
-            measuredWidth / 2 + buttonWidth / 2,
+            initSize / 2 + buttonWidth / 2 + lPadding,
             buttonThickness
         )
 //        tvNumRows.layout(
-//            measuredWidth - buttonThickness / 2 - paddingRight - tvNumRows.measuredWidth / 2,
+//            initSize - buttonThickness / 2 - paddingRight - tvNumRows.initSize / 2,
 //            measuredHeight / 2 - tvNumRows.measuredHeight / 2,
-//            measuredWidth - buttonThickness / 2 - paddingRight + tvNumRows.measuredWidth / 2,
+//            initSize - buttonThickness / 2 - paddingRight + tvNumRows.initSize / 2,
 //            measuredHeight / 2 + tvNumRows.measuredHeight / 2
 //        )
         btnIncRows.layout(
-            measuredWidth / 2 - buttonWidth / 2,
+            initSize / 2 - buttonWidth / 2 + lPadding,
             measuredHeight - buttonThickness,
-            measuredWidth / 2 + buttonWidth / 2,
+            initSize / 2 + buttonWidth / 2 + lPadding,
             measuredHeight
         )
         btnDecRowsCols.layout(
+            lPadding,
             0,
-            measuredHeight - buttonThickness * 3,
-            buttonThickness * 3,
-            measuredHeight
+            buttonThickness * 3 + lPadding,
+            buttonThickness * 3
         )
         btnDecRowsCols.z = context.dpToPx(2)
         btnIncRowsCols.layout(
-            measuredWidth - buttonThickness * 3,
-            paddingTop,
-            measuredWidth,
-            buttonThickness * 3
+            initSize - buttonThickness * 3 + lPadding,
+            measuredHeight - buttonThickness * 3,
+            initSize + lPadding,
+            measuredHeight
         )
         btnIncRowsCols.z = context.dpToPx(2)
         for (i in 0 until numRows) {
@@ -508,7 +516,7 @@ class MatrixViewGroup @JvmOverloads constructor(
 
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        var initSize: Int = resolveSize(widthMeasureSpec)
+        
         if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
             initSize = resolveSize(widthMeasureSpec)
         } else {
@@ -522,7 +530,8 @@ class MatrixViewGroup @JvmOverloads constructor(
         measureChild(tvNumRows, widthMeasureSpec, heightMeasureSpec)
         measureChild(tvNumCols, widthMeasureSpec, heightMeasureSpec)
         buttonThickness = initSize/12
-        setMeasuredDimension(initSize, initSize)
+        lPadding = resolveSize(widthMeasureSpec)/2-initSize/2
+        setMeasuredDimension(widthMeasureSpec, initSize)
     }
     interface OnDataChangedListener{
         fun onDataChanged(matrix: Matrix)

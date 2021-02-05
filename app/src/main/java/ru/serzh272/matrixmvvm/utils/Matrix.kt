@@ -1,6 +1,7 @@
 package ru.serzh272.matrixmvvm.utils
 
 import ru.serzh272.matrix.Fraction
+import ru.serzh272.matrixmvvm.exceptions.DeterminantZeroException
 import ru.serzh272.matrixmvvm.exceptions.MatrixDimensionsException
 import kotlin.jvm.Throws
 import kotlin.math.sqrt
@@ -35,10 +36,10 @@ class Matrix(r: Int = 3, c: Int = 3) {
             }
         }
     }
-
+    @Throws(MatrixDimensionsException::class)
     operator fun plus(m: Matrix): Matrix {
         if ((this.numColumns != m.numColumns) or (this.numRows != m.numRows)) {
-            throw Exception("Matrix sizes not equals")
+            throw MatrixDimensionsException("Matrix sizes not equals")
         } else {
             val res = Matrix(this.numRows, this.numColumns)
             for (i: Int in 0 until this.numRows) {
@@ -49,10 +50,10 @@ class Matrix(r: Int = 3, c: Int = 3) {
             return res
         }
     }
-
+    @Throws(MatrixDimensionsException::class)
     operator fun minus(m: Matrix): Matrix {
         if ((this.numColumns != m.numColumns) or (this.numRows != m.numRows)) {
-            throw Exception("Matrix sizes not equals")
+            throw MatrixDimensionsException("Matrix sizes not equals")
         } else {
             val res = Matrix(this.numRows, this.numColumns)
             for (i: Int in 0 until this.numRows) {
@@ -71,7 +72,7 @@ class Matrix(r: Int = 3, c: Int = 3) {
     operator fun set(r: Int, c: Int, fr: Fraction) {
         this.matr[r][c] = fr.copy()
     }
-
+    @Throws(MatrixDimensionsException::class)
     operator fun times(m: Matrix): Matrix {
         when {
             this.numColumns == m.numRows -> {
@@ -94,7 +95,7 @@ class Matrix(r: Int = 3, c: Int = 3) {
                 return this * m[0, 0]
             }
             else -> {
-                throw Exception("Columns number of M1 must be equal Columns number of M2")
+                throw MatrixDimensionsException("Columns number of M1 must be equal Columns number of M2")
             }
         }
     }
@@ -269,6 +270,7 @@ class Matrix(r: Int = 3, c: Int = 3) {
 
     /** Returns a determinant of matrix.
      */
+    @Throws(MatrixDimensionsException::class)
     fun determinant(): Fraction {
         if (this.numRows == this.numColumns) {
             val m: Matrix = this.copy()
@@ -339,16 +341,17 @@ class Matrix(r: Int = 3, c: Int = 3) {
                 }
             }
         } else {
-            throw Exception("Matrix must be squared")
+            throw MatrixDimensionsException("Matrix must be squared")
         }
     }
 
      /** Returns the inverse of the matrix, the lower triangular matrix or the upper triangular matrix with diagonal identity.
      *The [type] value should be from [Matrix.TransformType] and may be INVERSE, TOP_TRIANGLE or BOTTOM_TRIANGLE*/
-    fun transformMatrix(type: TransformType): Matrix {
+     @Throws(DeterminantZeroException::class)
+     fun transformMatrix(type: TransformType): Matrix {
         val dt: Fraction = this.determinant()
         if (dt.equals(0)) {
-            throw Exception("Determinant equals 0")
+            throw DeterminantZeroException("Determinant equals 0")
         } else {
             var m = Fraction()
             val n: Int = this.numColumns
@@ -400,6 +403,7 @@ class Matrix(r: Int = 3, c: Int = 3) {
 
     /** Returns a Frobenius matrix from square matrix.
      */
+    @Throws(MatrixDimensionsException::class)
     fun getFrobeniusMatrix(): Matrix {
         if (this.numRows == this.numColumns) {
             val n: Int = this.numColumns
@@ -446,7 +450,7 @@ class Matrix(r: Int = 3, c: Int = 3) {
             }
             return mFr
         } else {
-            throw Exception("Matrix must be squared")
+            throw MatrixDimensionsException("Matrix must be squared")
         }
     }
 

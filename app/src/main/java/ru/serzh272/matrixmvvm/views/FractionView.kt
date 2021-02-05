@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.res.TypedArray
 import android.graphics.*
 import android.util.AttributeSet
+import android.util.Log
+import android.view.MotionEvent
 import android.view.animation.LinearInterpolator
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors

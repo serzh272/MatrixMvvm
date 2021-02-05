@@ -29,7 +29,6 @@ class MatrixViewModel:ViewModel() {
             2 -> matrRez.value = matr
         }
         repository.saveItemData(matr, ind)
-        Log.d("M_MatrixViewModel", "${repository.getData()}")
     }
     fun getMatr(ind:Int):Matrix{
         return data[ind]
