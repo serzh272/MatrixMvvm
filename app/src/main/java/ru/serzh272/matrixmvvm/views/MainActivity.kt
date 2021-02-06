@@ -58,10 +58,10 @@ class MainActivity : AppCompatActivity() {
 
             })
         }
-        viewPager.setOnTouchListener { v, event ->
-            //Log.d("M_MainActivity", "${event.toString()}")
-            return@setOnTouchListener false
-        }
+//        viewPager.setOnTouchListener { v, event ->
+//            Log.d("M_MainActivity", "${event.toString()}")
+//            return@setOnTouchListener false
+//        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {

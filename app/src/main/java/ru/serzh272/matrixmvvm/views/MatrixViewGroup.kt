@@ -8,12 +8,15 @@ import android.content.res.Configuration
 import android.graphics.Color
 import android.util.AttributeSet
 import android.util.Log
-import android.view.*
+import android.view.Gravity
+import android.view.MotionEvent
+import android.view.View
+import android.view.WindowManager
 import android.view.animation.LinearInterpolator
 import android.view.inputmethod.EditorInfo
 import android.widget.*
 import androidx.core.content.ContextCompat
-import androidx.core.view.GestureDetectorCompat
+import androidx.core.view.children
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
@@ -22,8 +25,8 @@ import ru.serzh272.matrix.*
 import ru.serzh272.matrixmvvm.R
 import ru.serzh272.matrixmvvm.extensions.dpToPx
 import ru.serzh272.matrixmvvm.utils.Matrix
+import java.util.*
 import java.util.logging.Handler
-import kotlin.math.abs
 import kotlin.math.min
 
 @ExperimentalUnsignedTypes
@@ -31,7 +34,7 @@ class MatrixViewGroup @JvmOverloads constructor(
     context: Context,
     attrs: AttributeSet?,
     defStyleAttr: Int = 0
-) : FrameLayout(context, attrs, defStyleAttr), View.OnTouchListener {
+) : FrameLayout(context, attrs, defStyleAttr), View.OnClickListener {
     companion object {
         private const val DEFAULT_BUTTON_THICKNESS = 32
         private const val DEFAULT_BUTTON_WIDTH = 144
@@ -41,62 +44,55 @@ class MatrixViewGroup @JvmOverloads constructor(
         private const val MIN_DIMENSION = 1
     }
 
-    private var downX: Float = 0f
-    private var downY: Float = 0f
-    private var upX: Float = 0f
-    private var upY: Float = 0f
-    private var delta: Float = 20f
-
     private var initSize: Int = 0
     private var innerPadding: Int = context.dpToPx(DEFAULT_SPACING).toInt()
     var matrix = Matrix()
         get() {
             val field = Matrix(this.numRows, this.numColumns)
-            for (r in 0 until field.numRows){
-                for (c in 0 until field.numColumns){
+            for (r in 0 until field.numRows) {
+                for (c in 0 until field.numColumns) {
                     if (this.mFractionViews[r][c].mFraction != field[r, c]) {
-                        field[r, c]  = this.mFractionViews[r][c].mFraction
+                        field[r, c] = this.mFractionViews[r][c].mFraction
                     }
                 }
             }
             return field
         }
         set(value) {
-        field = value
-        if (field.numRows > this.numRows){
-            for (i in 0 until field.numRows - this.numRows){
-                this.addRow()
-            }
-        }else if(field.numRows < this.numRows){
-            for (i in 0 until this.numRows - field.numRows){
-                this.removeRow()
-            }
-        }
-        if (field.numColumns > this.numColumns){
-            for (i in 0 until field.numColumns - this.numColumns){
-                this.addColumn()
-            }
-        }else if(field.numColumns < this.numColumns){
-            for (i in 0 until this.numColumns - field.numColumns){
-                this.removeColumn()
-            }
-        }
-        for (r in 0 until field.numRows){
-            for (c in 0 until field.numColumns){
-                if (this.mFractionViews[r][c].mFraction != field[r, c]) {
-                    this.mFractionViews[r][c].mFraction = field[r, c]
+            field = value
+            if (field.numRows > this.numRows) {
+                for (i in 0 until field.numRows - this.numRows) {
+                    this.addRow()
+                }
+            } else if (field.numRows < this.numRows) {
+                for (i in 0 until this.numRows - field.numRows) {
+                    this.removeRow()
                 }
             }
-        }
+            if (field.numColumns > this.numColumns) {
+                for (i in 0 until field.numColumns - this.numColumns) {
+                    this.addColumn()
+                }
+            } else if (field.numColumns < this.numColumns) {
+                for (i in 0 until this.numColumns - field.numColumns) {
+                    this.removeColumn()
+                }
+            }
+            for (r in 0 until field.numRows) {
+                for (c in 0 until field.numColumns) {
+                    if (this.mFractionViews[r][c].mFraction != field[r, c]) {
+                        this.mFractionViews[r][c].mFraction = field[r, c]
+                    }
+                }
+            }
             tvNumRows.text = "${this.numRows}"
             tvNumCols.text = "${this.numColumns}"
 
-    }
-    //lateinit var mDetector:GestureDetector
+        }
     var numRows: Int = 3
     var numColumns: Int = 3
     var mode = 1
-    var listener:OnDataChangedListener? = null
+    var listener: OnDataChangedListener? = null
     var spacing: Int = context.dpToPx(DEFAULT_SPACING).toInt()
     var lPadding = 0
     private var buttonThickness: Int = context.dpToPx(DEFAULT_BUTTON_THICKNESS).toInt()
@@ -119,52 +115,44 @@ class MatrixViewGroup @JvmOverloads constructor(
     }
 
     init {
-        //mDetector = GestureDetector(context, GestureDetector.OnGestureListener)
         val ltTrans = LayoutTransition()
-        ltTrans.setDuration(LayoutTransition.DISAPPEARING,100)
+        ltTrans.setDuration(LayoutTransition.DISAPPEARING, 100)
         layoutTransition = ltTrans
         initAttrs(context, attrs)
         mFractionViews = MutableList(numRows) { MutableList(numColumns) { FractionView(context) } }
         with(btnIncRowsCols) {
             this.setBackgroundResource(R.drawable.btn_right_bottom_bg)
             addView(this)
-            //setBackgroundColor(ContextCompat.getColor(context, R.color.color_primary))
         }
-        btnIncRowsCols.setOnTouchListener(this)
+        btnIncRowsCols.setOnClickListener(this)
         with(btnDecRowsCols) {
             this.setBackgroundResource(R.drawable.btn_left_top_bg)
             addView(this)
-            //setBackgroundColor(ContextCompat.getColor(context, R.color.color_primary))
         }
+        btnDecRowsCols.setOnClickListener(this)
         with(btnIncRows) {
             this.setBackgroundResource(R.drawable.btn_down_bg)
             addView(this)
-
-            //setBackgroundColor(ContextCompat.getColor(context, R.color.color_primary))
         }
-        btnIncRows.setOnTouchListener(this)
+        btnIncRows.setOnClickListener(this)
         with(btnDecRows) {
             this.setBackgroundResource(R.drawable.btn_up_bg)
             addView(this)
-            //setBackgroundColor(ContextCompat.getColor(context, R.color.color_primary))
         }
-        btnDecRows.setOnTouchListener(this)
+        btnDecRows.setOnClickListener(this)
         with(btnDecCols) {
             this.setBackgroundResource(R.drawable.btn_left_bg)
             addView(this)
-            //setBackgroundColor(ContextCompat.getColor(context, R.color.color_primary))
         }
-        btnDecCols.setOnTouchListener(this)
+        btnDecCols.setOnClickListener(this)
         with(btnIncCols) {
             this.setBackgroundResource(R.drawable.btn_right_bg)
             addView(this)
-            //setBackgroundColor(ContextCompat.getColor(context, R.color.color_primary))
         }
-        btnIncCols.setOnTouchListener(this)
+        btnIncCols.setOnClickListener(this)
 
-        btnDecRowsCols.setOnTouchListener(this)
         with(tvNumCols) {
-            addView(this)
+            //addView(this)
             this.maxLines = 1
             this.textSize = 24f
             this.layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
@@ -172,7 +160,7 @@ class MatrixViewGroup @JvmOverloads constructor(
             this.text = "$numColumns"
         }
         with(tvNumRows) {
-            addView(this)
+            //addView(this)
             this.maxLines = 1
             this.textSize = 24f
             this.layoutParams = LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT)
@@ -183,7 +171,7 @@ class MatrixViewGroup @JvmOverloads constructor(
         for (i in 0 until numRows) {
             for (j in 0 until numColumns) {
                 mFractionViews[i][j].mFraction = matrix[i, j]
-                mFractionViews[i][j].setOnTouchListener(this)
+                mFractionViews[i][j].setOnClickListener(this)
                 addView(mFractionViews[i][j])
             }
         }
@@ -214,35 +202,25 @@ class MatrixViewGroup @JvmOverloads constructor(
         }
     }
 
-    /*override fun get(r: Int, c: Int): Fraction {
-        TODO("Not yet implemented")
-    }
-
-    override fun set(r: Int, c: Int, fr: Fraction) {
-        TODO("Not yet implemented")
-    }*/
-
-
-    fun addRow(pos: Int) {
+    private fun addRow(pos: Int) {
         this.mFractionViews.add(pos, MutableList(this.numColumns) {
             FractionView(context)
         })
         for (j in 0 until numColumns) {
             mFractionViews[pos][j].mFraction = Fraction()
             addView(mFractionViews[pos][j])
-            mFractionViews[pos][j].z = context.dpToPx(3)
+
         }
         this.numRows++
     }
 
-    fun addRow() {
+    private fun addRow() {
         this.mFractionViews.add(MutableList(this.numColumns) {
             FractionView(context)
         })
         for (j in 0 until numColumns) {
             mFractionViews[numRows][j].mFraction = Fraction()
             addView(mFractionViews[numRows][j])
-            mFractionViews[numRows][j].z = context.dpToPx(3)
         }
         this.numRows++
         listener?.onDataChanged(matrix)
@@ -256,7 +234,6 @@ class MatrixViewGroup @JvmOverloads constructor(
                 FractionView(context)
             )
             addView(mFractionViews[i][pos])
-            mFractionViews[i][pos].z = context.dpToPx(3)
         }
         this.numColumns++
     }
@@ -268,13 +245,12 @@ class MatrixViewGroup @JvmOverloads constructor(
                 FractionView(context)
             )
             addView(mFractionViews[i][numColumns])
-            mFractionViews[i][numColumns].z = context.dpToPx(3)
         }
         this.numColumns++
         listener?.onDataChanged(matrix)
     }
 
-    fun removeRowAt(pos: Int) {
+    private fun removeRowAt(pos: Int) {
         if ((pos < this.numRows) and (pos >= 0)) {
             for (j in 0 until numColumns) {
                 removeView(mFractionViews[pos][j])
@@ -287,7 +263,7 @@ class MatrixViewGroup @JvmOverloads constructor(
         }
     }
 
-    fun removeColumnAt(pos: Int) {
+    private fun removeColumnAt(pos: Int) {
         if ((pos < this.numColumns) and (pos >= 0)) {
             for (i in 0 until this.numRows) {
                 removeView(mFractionViews[i][pos])
@@ -312,14 +288,15 @@ class MatrixViewGroup @JvmOverloads constructor(
         }
     }
 
-    fun removeRow() {
+    private fun removeRow() {
         removeRowAt(numRows - 1)
 
     }
 
-    fun removeColumn() {
+    private fun removeColumn() {
         removeColumnAt(numColumns - 1)
     }
+
     operator fun get(r: Int, c: Int): Fraction {
         return this.mFractionViews[r][c].mFraction
     }
@@ -328,11 +305,8 @@ class MatrixViewGroup @JvmOverloads constructor(
         matrix[r, c] = fr.copy()
         this.mFractionViews[r][c].mFraction = matrix[r, c]
     }
-    /*
-    override fun transpose() {
-        TODO("Not yet implemented")
-    }*/
-    private fun showAlertInputDialog(frV: FractionView){
+
+    private fun showAlertInputDialog(frV: FractionView) {
         val textInpLt = inflate(context, R.layout.item_input_dialog, null) as TextInputLayout
         val input = textInpLt.editText
         //input?.inputType = InputType.TYPE_NULL
@@ -351,8 +325,8 @@ class MatrixViewGroup @JvmOverloads constructor(
         val alert = AlertDialog.Builder(context)
             .setTitle("Введите значение")
             .setView(textInpLt)
-            .setPositiveButton("Ok"){ dialog, _ ->
-                val fr =Fraction(input?.text.toString())
+            .setPositiveButton("Ok") { dialog, _ ->
+                val fr = Fraction(input?.text.toString())
                 frV.mFraction.numerator = fr.numerator
                 frV.mFraction.denominator = fr.denominator
                 frV.invalidate()
@@ -360,13 +334,14 @@ class MatrixViewGroup @JvmOverloads constructor(
                 listener?.onDataChanged(matrix)
             }
             .create()
-        input?.setOnEditorActionListener { v, actionId, event ->
+        input?.setOnEditorActionListener { v, actionId, _ ->
             when (actionId) {
                 EditorInfo.IME_ACTION_DONE -> {
                     if (v is TextInputEditText) {
                         val fr = Fraction(v.text.toString())
                         frV.mFraction.numerator = fr.numerator
                         frV.mFraction.denominator = fr.denominator
+                        frV.invalidate()
                         alert.cancel()
                         listener?.onDataChanged(matrix)
                     }
@@ -380,126 +355,59 @@ class MatrixViewGroup @JvmOverloads constructor(
         input?.requestFocus()
     }
 
-    override fun onTouch(v: View?, event: MotionEvent?): Boolean {
-        Log.d("M_MatrixViewGroup", "${event.toString()}")
-        when(event?.action){
-            MotionEvent.ACTION_DOWN ->{
-                downX = event.x
-                downY = event.y
+    private fun clickHandler(v:View?){
+        when (v) {
+            is FractionView -> {
+                showAlertInputDialog(v)
             }
-            MotionEvent.ACTION_CANCEL->{
-                upX = event.x
-                upY = event.y
-            }
-            MotionEvent.ACTION_UP->{
-                upX = event.x
-                upY = event.y
-            }
-            else -> return true
-        }
-        if (event?.action == MotionEvent.ACTION_UP || event?.action == MotionEvent.ACTION_CANCEL){
-            delta = cellSize
-            if (abs(downX - upX) < delta && abs(downY - upY) < delta){
-                    when (v) {
-                        is FractionView -> {
-                            showAlertInputDialog(v)
-                        }
-                        btnDecCols -> {
-                            if (numColumns > MIN_DIMENSION) {
-                                removeColumn()
-                            }
-                        }
-                        btnIncCols -> {
-                            if (numColumns < MAX_DIMENSION) {
-                                addColumn()
-                                requestLayout()
-                            }
-                        }
-                        btnDecRows -> {
-                            if (numRows > MIN_DIMENSION) {
-                                removeRow()
-
-                            }
-                        }
-                        btnIncRows -> {
-                            //addRow()
-                            if (numRows < MAX_DIMENSION) {
-                                addRow()
-                            }
-                        }
-                        btnIncRowsCols -> {
-                            if (numRows < MAX_DIMENSION && numColumns < MAX_DIMENSION) {
-                                addRow()
-                                addColumn()
-                            }
-                        }
-                        btnDecRowsCols -> {
-                            if (numRows > MIN_DIMENSION && numColumns > MIN_DIMENSION) {
-                                removeRow()
-                                removeColumn()
-                            }
-                        }
-                    }
-                    if (v is MaterialButton && v !is FractionView ) {
-                        tvNumRows.text = "$numRows"
-                        tvNumCols.text = "$numColumns"
-                    }
+            btnDecCols -> {
+                if (numColumns > MIN_DIMENSION) {
+                    removeColumn()
                 }
+            }
+            btnIncCols -> {
+                if (numColumns < MAX_DIMENSION) {
+                    addColumn()
+                }
+            }
+            btnDecRows -> {
+                if (numRows > MIN_DIMENSION) {
+                    removeRow()
+
+                }
+            }
+            btnIncRows -> {
+                //addRow()
+                if (numRows < MAX_DIMENSION) {
+                    addRow()
+                }
+            }
+            btnIncRowsCols -> {
+                if (numRows < MAX_DIMENSION && numColumns < MAX_DIMENSION) {
+                    addRow()
+                    addColumn()
+                }
+            }
+            btnDecRowsCols -> {
+                if (numRows > MIN_DIMENSION && numColumns > MIN_DIMENSION) {
+                    removeRow()
+                    removeColumn()
+                }
+            }
         }
-        return true
+        if (v is MaterialButton && v !is FractionView) {
+            tvNumRows.text = "$numRows"
+            tvNumCols.text = "$numColumns"
+        }
     }
 
-//    @ExperimentalUnsignedTypes
-//    override fun onClick(v: View?) {
-//        when (v) {
-//            is FractionView -> {
-//                showAlertInputDialog(v)
-//            }
-//            btnDecCols -> {
-//                if (numColumns > MIN_DIMENSION) {
-//                    removeColumn()
-//                }
-//            }
-//            btnIncCols -> {
-//                if (numColumns < MAX_DIMENSION) {
-//                    addColumn()
-//                    requestLayout()
-//                }
-//            }
-//            btnDecRows -> {
-//                if (numRows > MIN_DIMENSION) {
-//                    removeRow()
-//
-//                }
-//            }
-//            btnIncRows -> {
-//                //addRow()
-//                if (numRows < MAX_DIMENSION) {
-//                    addRow()
-//                }
-//            }
-//            btnIncRowsCols -> {
-//                if (numRows < MAX_DIMENSION && numColumns < MAX_DIMENSION) {
-//                    addRow()
-//                    addColumn()
-//                }
-//            }
-//            btnDecRowsCols -> {
-//                if (numRows > MIN_DIMENSION && numColumns > MIN_DIMENSION) {
-//                    removeRow()
-//                    removeColumn()
-//                }
-//            }
-//        }
-//        if (v is MaterialButton && v !is FractionView ) {
-//            tvNumRows.text = "$numRows"
-//            tvNumCols.text = "$numColumns"
-//        }
-//    }
-
+    @ExperimentalUnsignedTypes
+    override fun onClick(v: View?) {
+        clickHandler(v)
+    }
 
     override fun onLayout(changed: Boolean, l: Int, t: Int, r: Int, b: Int) {
-        buttonWidth = initSize/3
+        buttonWidth = initSize / 3
         val leftPadding: Int = (initSize - paddingLeft - paddingRight -
                 numColumns * cellSize.toInt() - (numColumns - 1) * spacing -
                 buttonThickness * 2) / 2 + lPadding
@@ -511,50 +419,42 @@ class MatrixViewGroup @JvmOverloads constructor(
             buttonThickness + lPadding,
             measuredHeight / 2 + buttonWidth / 2
         )
-//        tvNumCols.layout(
-//            initSize / 2 - tvNumCols.initSize / 2,
-//            measuredHeight - buttonThickness / 2 - tvNumCols.measuredHeight / 2 - paddingBottom,
-//            initSize / 2 + tvNumCols.initSize / 2,
-//            measuredHeight - buttonThickness / 2 + tvNumCols.measuredHeight / 2 - paddingBottom
-//        )
+        btnDecCols.z = 1.5f
         btnIncCols.layout(
             initSize - buttonThickness + lPadding,
             measuredHeight / 2 - buttonWidth / 2,
             initSize + lPadding,
             measuredHeight / 2 + buttonWidth / 2
         )
+        btnIncCols.z = 1.5f
         btnDecRows.layout(
             initSize / 2 - buttonWidth / 2 + lPadding,
             0,
             initSize / 2 + buttonWidth / 2 + lPadding,
             buttonThickness
         )
-//        tvNumRows.layout(
-//            initSize - buttonThickness / 2 - paddingRight - tvNumRows.initSize / 2,
-//            measuredHeight / 2 - tvNumRows.measuredHeight / 2,
-//            initSize - buttonThickness / 2 - paddingRight + tvNumRows.initSize / 2,
-//            measuredHeight / 2 + tvNumRows.measuredHeight / 2
-//        )
+        btnDecRows.z = 1.5f
         btnIncRows.layout(
             initSize / 2 - buttonWidth / 2 + lPadding,
             measuredHeight - buttonThickness,
             initSize / 2 + buttonWidth / 2 + lPadding,
             measuredHeight
         )
+        btnIncRows.z = 1.5f
         btnDecRowsCols.layout(
             lPadding,
             0,
             buttonThickness * 3 + lPadding,
             buttonThickness * 3
         )
-        btnDecRowsCols.z = context.dpToPx(2)
+        btnDecRowsCols.z = 1.5f
         btnIncRowsCols.layout(
             initSize - buttonThickness * 3 + lPadding,
             measuredHeight - buttonThickness * 3,
             initSize + lPadding,
             measuredHeight
         )
-        btnIncRowsCols.z = context.dpToPx(2)
+        btnIncRowsCols.z = 1.5f
         for (i in 0 until numRows) {
             for (j in 0 until numColumns) {
                 val left =
@@ -567,20 +467,20 @@ class MatrixViewGroup @JvmOverloads constructor(
                         topPadding + buttonThickness
                 mFractionViews[i][j].setPadding(0, 0, 0, 0)
                 mFractionViews[i][j].layout(left, top, right, bottom)
-                mFractionViews[i][j].backColor = cellsColor
-                mFractionViews[i][j].setOnTouchListener(this)
+                if (!mFractionViews[i][j].hasOnClickListeners()) {
+                    mFractionViews[i][j].setOnClickListener(this)
+                }
                 mFractionViews[i][j].mode = mode
                 mFractionViews[i][j].pos.x = i
                 mFractionViews[i][j].pos.y = j
-                mFractionViews[i][j].z = context.dpToPx(3)
+                mFractionViews[i][j].z = 5.0f
             }
         }
-
-
+        invalidate()
     }
 
-    fun resolveSize(spec: Int): Int{
-        return when(MeasureSpec.getMode(spec)){
+    private fun resolveSize(spec: Int): Int {
+        return when (MeasureSpec.getMode(spec)) {
             MeasureSpec.UNSPECIFIED -> context.dpToPx(500).toInt()
             MeasureSpec.AT_MOST -> MeasureSpec.getSize(spec)
             MeasureSpec.EXACTLY -> MeasureSpec.getSize(spec)
@@ -590,28 +490,32 @@ class MatrixViewGroup @JvmOverloads constructor(
 
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        
-        if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            initSize = resolveSize(widthMeasureSpec)
+        initSize = if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            resolveSize(widthMeasureSpec)
         } else {
-            initSize = resolveSize(heightMeasureSpec)
+            resolveSize(heightMeasureSpec)
         }
         val cellHeight: Int = (initSize - spacing * (numRows - 1) - 2 * innerPadding - paddingTop -
                 paddingBottom - buttonThickness * 2) / numRows
-        val cellWidth: Int = (initSize - spacing * (numColumns - 1) - 2 * innerPadding - paddingLeft -
-                paddingRight - buttonThickness * 2) / numColumns
+        val cellWidth: Int =
+            (initSize - spacing * (numColumns - 1) - 2 * innerPadding - paddingLeft -
+                    paddingRight - buttonThickness * 2) / numColumns
         cellSize = min(cellHeight, cellWidth).toFloat()
-        measureChild(tvNumRows, widthMeasureSpec, heightMeasureSpec)
-        measureChild(tvNumCols, widthMeasureSpec, heightMeasureSpec)
-        buttonThickness = initSize/12
-        lPadding = resolveSize(widthMeasureSpec)/2-initSize/2
+//        measureChild(tvNumRows, widthMeasureSpec, heightMeasureSpec)
+//        measureChild(tvNumCols, widthMeasureSpec, heightMeasureSpec)
+//        for (ch in children){
+//            measureChild(ch, widthMeasureSpec, heightMeasureSpec)
+//        }
+        buttonThickness = initSize / 12
+        lPadding = resolveSize(widthMeasureSpec) / 2 - initSize / 2
         setMeasuredDimension(widthMeasureSpec, initSize)
     }
-    interface OnDataChangedListener{
+
+    interface OnDataChangedListener {
         fun onDataChanged(matrix: Matrix)
     }
 
-    fun setOnDataChangedListener(listener: OnDataChangedListener){
+    fun setOnDataChangedListener(listener: OnDataChangedListener) {
         this.listener = listener
     }
 }
