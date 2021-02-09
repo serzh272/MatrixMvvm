@@ -145,8 +145,9 @@ class Fraction {
         return this + (-fr)
     }
 
+    @ExperimentalUnsignedTypes
     operator fun minus(n: Int): Fraction {
-        return this - n
+        return this - Fraction(n)
     }
 
     @ExperimentalUnsignedTypes
@@ -201,6 +202,16 @@ class Fraction {
 
     @ExperimentalUnsignedTypes
     operator fun compareTo(fr: Fraction): Int {
+        val f: Fraction = this - fr
+        if (f.numerator > 0) {
+            return 1
+        } else if (f.numerator == 0) {
+            return 0
+        }
+        return -1
+    }
+
+    operator fun compareTo(fr: Int): Int {
         val f: Fraction = this - fr
         if (f.numerator > 0) {
             return 1
@@ -321,6 +332,23 @@ class Fraction {
     @ExperimentalUnsignedTypes
     fun getValues():Triple<Int, Int, UInt>{
         return Triple(this.numerator/this.denominator.toInt(), this.numerator % this.denominator.toInt(), this.denominator)
+    }
+
+    companion object{
+        fun min(fr1:Fraction, fr2:Fraction):Fraction{
+            return if(fr1 <fr2){
+                fr1
+            }else{
+                fr2
+            }
+        }
+        fun max(fr1:Fraction, fr2:Fraction):Fraction{
+            return if(fr1 > fr2){
+                fr1
+            }else{
+                fr2
+            }
+        }
     }
 }
 

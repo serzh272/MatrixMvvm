@@ -1,18 +1,19 @@
 package ru.serzh272.matrixmvvm.views
 
-import android.animation.ValueAnimator
 import android.content.Context
 import android.content.res.TypedArray
 import android.graphics.*
 import android.util.AttributeSet
 import android.util.Log
+import android.view.GestureDetector
 import android.view.MotionEvent
-import android.view.animation.LinearInterpolator
+import android.widget.Toast
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors
 import ru.serzh272.matrix.Fraction
 import ru.serzh272.matrixmvvm.R
 import ru.serzh272.matrixmvvm.extensions.dpToPx
+import ru.serzh272.matrixmvvm.utils.MotionEventsDebugger
 import kotlin.math.abs
 import kotlin.math.max
 
@@ -148,7 +149,23 @@ class FractionView @JvmOverloads constructor(context: Context,
         }
     }
 
+//    override fun onTouchEvent(event: MotionEvent?): Boolean {
+//        MotionEventsDebugger.debugPrint("onTouchEvent","FractionView", event)
+//        return MotionEventsDebugger.debugReturnPrint("onTouchEvent", "FractionView", super.onTouchEvent(event))
+//    }
+
+//    override fun dispatchTouchEvent(event: MotionEvent?): Boolean {
+//        MotionEventsDebugger.debugPrint("dispatchTouchEvent","FractionView", event)
+//        return MotionEventsDebugger.debugReturnPrint("onTouchEvent", "FractionView", super.dispatchTouchEvent(event))
+//    }
+
     override fun toString(): String {
         return mFraction.toString()
     }
+
+//    override fun performClick(): Boolean {
+//        super.performClick()
+//        Toast.makeText(context, "clicked", Toast.LENGTH_SHORT).show()
+//        return true
+//    }
 }

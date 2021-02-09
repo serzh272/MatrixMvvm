@@ -1,13 +1,17 @@
 package ru.serzh272.matrixmvvm.utils
 
+import android.content.res.Resources
+import android.os.Parcel
+import android.os.Parcelable
 import ru.serzh272.matrix.Fraction
+import ru.serzh272.matrixmvvm.R
 import ru.serzh272.matrixmvvm.exceptions.DeterminantZeroException
 import ru.serzh272.matrixmvvm.exceptions.MatrixDimensionsException
 import kotlin.jvm.Throws
 import kotlin.math.sqrt
 
 @ExperimentalUnsignedTypes
-class Matrix(r: Int = 3, c: Int = 3) {
+class Matrix(r: Int = 3, c: Int = 3) : Parcelable {
     var numColumns: Int = c
         set(value) {
             field = if ((value > 0) and (value <= 20)) value else 3
@@ -20,13 +24,15 @@ class Matrix(r: Int = 3, c: Int = 3) {
     private var matr: MutableList<MutableList<Fraction>> =
         MutableList(numRows) { MutableList(numColumns) { Fraction() } }
 
+    constructor(parcel: Parcel) : this(parcel.readString())
+
     init {
         matr = MutableList(r) { MutableList(c) { Fraction() } }
     }
 
-    constructor(mStr: String) : this() {
-        val strRows = mStr.split(Regex("\\}(,\\s*)\\{")).map { it.replace(Regex("[}{]"), "") }
-        this.numRows = strRows.size
+    constructor(mStr: String?) : this() {
+        val strRows = mStr?.split(Regex("\\}(,\\s*)\\{"))?.map { it.replace(Regex("[}{]"), "") }
+        this.numRows = strRows!!.size
         this.numColumns = strRows[0].split(Regex(",\\s*")).size
         var rowItems: List<String>
         for (r in 0 until this.numRows) {
@@ -36,6 +42,7 @@ class Matrix(r: Int = 3, c: Int = 3) {
             }
         }
     }
+
     @Throws(MatrixDimensionsException::class)
     operator fun plus(m: Matrix): Matrix {
         if ((this.numColumns != m.numColumns) or (this.numRows != m.numRows)) {
@@ -50,6 +57,7 @@ class Matrix(r: Int = 3, c: Int = 3) {
             return res
         }
     }
+
     @Throws(MatrixDimensionsException::class)
     operator fun minus(m: Matrix): Matrix {
         if ((this.numColumns != m.numColumns) or (this.numRows != m.numRows)) {
@@ -72,6 +80,7 @@ class Matrix(r: Int = 3, c: Int = 3) {
     operator fun set(r: Int, c: Int, fr: Fraction) {
         this.matr[r][c] = fr.copy()
     }
+
     @Throws(MatrixDimensionsException::class)
     operator fun times(m: Matrix): Matrix {
         when {
@@ -113,18 +122,21 @@ class Matrix(r: Int = 3, c: Int = 3) {
     operator fun Fraction.times(m: Matrix): Matrix {
         return m * this
     }
+
     /** Adds row to [pos] position
      */
     fun addRow(pos: Int) {
         this.matr.add(pos, MutableList(this.numColumns) { Fraction() })
         this.numRows++
     }
+
     /** Adds row to end position
      */
     fun addRow() {
         this.matr.add(MutableList(this.numColumns) { Fraction() })
         this.numRows++
     }
+
     /** Adds column to [pos] position
      */
     fun addColumn(pos: Int) {
@@ -133,6 +145,7 @@ class Matrix(r: Int = 3, c: Int = 3) {
         }
         this.numColumns++
     }
+
     /** Adds column to end position
      */
     fun addColumn() {
@@ -141,6 +154,7 @@ class Matrix(r: Int = 3, c: Int = 3) {
         }
         this.numColumns++
     }
+
     /** Removes row at [pos] position
      */
     fun removeRowAt(pos: Int) {
@@ -151,11 +165,13 @@ class Matrix(r: Int = 3, c: Int = 3) {
             throw IndexOutOfBoundsException()
         }
     }
+
     /** Removes row at end position
      */
     fun removeRow() {
         removeRowAt(numRows - 1)
     }
+
     /** Removes column at [pos] position
      */
     fun removeColumnAt(pos: Int) {
@@ -168,11 +184,13 @@ class Matrix(r: Int = 3, c: Int = 3) {
             throw IndexOutOfBoundsException()
         }
     }
+
     /** Removes column at end position
      */
     fun removeColumn() {
         removeColumnAt(numColumns - 1)
     }
+
     /** Adds [n] rows below [pos] position
      */
     fun addRows(pos: Int, n: Int) {
@@ -180,6 +198,7 @@ class Matrix(r: Int = 3, c: Int = 3) {
             this.addRow(pos + i - 1)
         }
     }
+
     /** Adds [n] columns after [pos] position
      */
     fun addColumns(pos: Int, n: Int) {
@@ -187,6 +206,7 @@ class Matrix(r: Int = 3, c: Int = 3) {
             this.addColumn(pos + i - 1)
         }
     }
+
     /** Swaps [r2] and [r1] rows
      */
     fun swapRows(r1: Int, r2: Int) {
@@ -197,6 +217,7 @@ class Matrix(r: Int = 3, c: Int = 3) {
             this[r2, j] = f
         }
     }
+
     /** Swaps [c2] and [c1] columns
      */
     fun swapColumns(c1: Int, c2: Int) {
@@ -207,6 +228,7 @@ class Matrix(r: Int = 3, c: Int = 3) {
             this[i, c2] = f
         }
     }
+
     /** Subtracts from row [r2] multiplication row [r1] by [fr] parameter
      */
     fun multRows(r1: Int, r2: Int, fr: Fraction) {
@@ -214,6 +236,7 @@ class Matrix(r: Int = 3, c: Int = 3) {
             this[r2, j] -= this[r1, j] * fr
         }
     }
+
     /** Subtracts from column [c2] multiplication column [c1] by [fr] parameter
      */
     fun multColumns(c1: Int, c2: Int, fr: Fraction) {
@@ -221,6 +244,7 @@ class Matrix(r: Int = 3, c: Int = 3) {
             this[i, c2] -= this[i, c1] * fr
         }
     }
+
     /** Returns a third norm of matrix
      */
     fun norm3(): Double {
@@ -248,7 +272,7 @@ class Matrix(r: Int = 3, c: Int = 3) {
         this.numColumns = m.numColumns
     }
 
-    fun getTranspose():Matrix {
+    fun getTranspose(): Matrix {
         val m = Matrix(this.numColumns, this.numRows)
         for (i in 0 until this.numRows) {
             for (j in 0 until this.numColumns) {
@@ -327,6 +351,7 @@ class Matrix(r: Int = 3, c: Int = 3) {
             throw MatrixDimensionsException("Matrix must be squared")
         }
     }
+
     /** Set square matrix to identity matrix.
      */
     private fun setEMatr() {
@@ -345,10 +370,10 @@ class Matrix(r: Int = 3, c: Int = 3) {
         }
     }
 
-     /** Returns the inverse of the matrix, the lower triangular matrix or the upper triangular matrix with diagonal identity.
+    /** Returns the inverse of the matrix, the lower triangular matrix or the upper triangular matrix with diagonal identity.
      *The [type] value should be from [Matrix.TransformType] and may be INVERSE, TOP_TRIANGLE or BOTTOM_TRIANGLE*/
-     @Throws(DeterminantZeroException::class)
-     fun transformMatrix(type: TransformType): Matrix {
+    @Throws(DeterminantZeroException::class)
+    fun transformMatrix(type: TransformType): Matrix {
         val dt: Fraction = this.determinant()
         if (dt.equals(0)) {
             throw DeterminantZeroException("Determinant equals 0")
@@ -445,7 +470,12 @@ class Matrix(r: Int = 3, c: Int = 3) {
                 mFr = if (!e.determinant().equals(0)) {
                     (e * mFr) * (e.transformMatrix(TransformType.INVERSE))
                 } else {
-                    (e * mFr) * (e.transformMatrix(TransformType.INVERSE))
+                    try {
+                        (e * mFr) * (e.transformMatrix(TransformType.INVERSE))
+                    } catch (ex: DeterminantZeroException) {
+                        throw DeterminantZeroException("Unable to transform matrix")
+                        Matrix()
+                    }
                 }
             }
             return mFr
@@ -474,11 +504,53 @@ class Matrix(r: Int = 3, c: Int = 3) {
         }
         return res
     }
+
     /** Types of matrix for [transformMatrix] method.
      */
     enum class TransformType {
         INVERSE,
         UPPER_TRIANGULAR,
         LOWER_TRIANGULAR
+    }
+
+    fun exportToString(): String {
+        var res = ""
+        for (i in 0 until this.numRows) {
+            res += "{"
+            for (j in 0 until this.numColumns) {
+                res += if (this[i, j] == null) {
+                    "0"
+                } else {
+                    this[i, j]
+                }
+                res += if (j != (this.numColumns - 1)) {
+                    ", "
+                } else {
+                    "}"
+                }
+            }
+            if (i != (this.numRows - 1)) {
+                res += ", "
+            }
+        }
+        return res
+    }
+
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeString(this.exportToString())
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<Matrix> {
+        override fun createFromParcel(parcel: Parcel): Matrix {
+            return Matrix(parcel)
+        }
+
+        override fun newArray(size: Int): Array<Matrix?> {
+            return arrayOfNulls(size)
+        }
     }
 }

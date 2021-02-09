@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/determinant_item"
-        android:title="Determinant"/>
+        android:title="@string/determinant_text"/>
     <item
         android:id="@+id/summ_item"
         android:title="A + B"/>
@@ -14,17 +14,20 @@
         android:title="A × B"/>
     <item
         android:id="@+id/inverse_item"
-        android:title="Inverse"/>
+        android:title="@string/inverse_text"/>
     <item
         android:id="@+id/frobenius_item"
-        android:title="Frobenius"/>
+        android:title="@string/frobenius_text"/>
     <item
         android:id="@+id/upper_triangular_item"
-        android:title="Upper triangular"/>
+        android:title="@string/upper_triangular_text"/>
     <item
         android:id="@+id/lower_triangular_item"
-        android:title="Lower triangular"/>
+        android:title="@string/lower_triangular_text"/>
     <item
         android:id="@+id/transpose_item"
-        android:title="Transpose"/>
+        android:title="@string/transpose_text"/>
+    <item
+        android:id="@+id/gershgorin_item"
+        android:title="@string/gershgorin_circles_string"/>
 </menu>

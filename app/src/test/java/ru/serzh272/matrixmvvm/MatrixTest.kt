@@ -99,13 +99,22 @@ class MatrixTest {
 
     @Test
     fun test_init_from_string() {
-        val str = "{1.2, 2.6, 3/4}," +
-                "{4/7, 5, 6}," +
-                "{8 ,18/6, 9}"
+        val str = "{1.2, 2.6, 3/4}, " +
+                "{4/7, 5, 6}, " +
+                "{8 , 18/6, 9}"
         val m = Matrix(str)
         assertEquals(m[1,1], Fraction(5))
         assertEquals(m[2,1], Fraction(3))
         assertEquals(m[0,0], Fraction(6, 5u))
+
+    }
+    @Test
+    fun test_export_to_string() {
+        val str = "{4/3, 5/3, 3/4}, " +
+                "{4/7, 5, 6}, " +
+                "{8, 3, 9}"
+        val m = Matrix(str)
+        assertEquals(str, m.exportToString())
 
     }
 
@@ -123,6 +132,9 @@ class MatrixTest {
         assertEquals(Fraction(), m.determinant())
 
     }
-
+    @Test
+    fun test_strings() {
+        println(String.format("%-21s", "longString") + "pastString")
+    }
 
 }

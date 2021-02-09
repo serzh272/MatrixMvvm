@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Матричный калькулятор</string>
+    <string name="squared_matrix_exception_message">Матрица должна быть квадратной</string>
+    <string name="determinant_text">Определитель</string>
+    <string name="inverse_text">Обратная</string>
+    <string name="frobenius_text">Фробениуса</string>
+    <string name="upper_triangular_text">Верхняя треугольная</string>
+    <string name="lower_triangular_text">Нижняя треугольная</string>
+    <string name="transpose_text">Транспонировать</string>
+    <string name="gershgorin_circles_string">Круги Гершгорина</string>
+</resources>
