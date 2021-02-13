@@ -8,7 +8,9 @@ import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
 import ru.serzh272.matrix.Fraction
+import ru.serzh272.matrixmvvm.extensions.dpToPx
 import ru.serzh272.matrixmvvm.utils.Matrix
+import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
@@ -18,8 +20,11 @@ class GershgorinView @JvmOverloads constructor(context: Context,
                      defStyleAttr: Int = 0):
     View(context, attrs , defStyleAttr) {
 
-    private lateinit var paint: Paint
-    private var mMatrix: Matrix = Matrix()
+    private var circlesPaint: Paint
+    private var axisPaint: Paint
+    private var mMatrix: Matrix = Matrix("{1, 2, 3}," +
+            "{4, 5.6, 6}," +
+            "{8 ,6.8, 9}")
     private var mGraphColor = 0
     private var mXAxisColor = 0
     private var mYAxisColor = 0
@@ -31,7 +36,8 @@ class GershgorinView @JvmOverloads constructor(context: Context,
     }
 
     init {
-        paint = Paint(Paint.ANTI_ALIAS_FLAG)
+        circlesPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+        axisPaint = Paint(Paint.ANTI_ALIAS_FLAG)
         initAttrs(context, attrs)
     }
 
@@ -63,59 +69,42 @@ class GershgorinView @JvmOverloads constructor(context: Context,
 
     override fun onDraw(canvas: Canvas?) {
         //super.onDraw(canvas)
-        drawAxis(canvas)
-        drawCircles(mMatrix, canvas)
+        val origin = PointF(width.toFloat()/2, height.toFloat()/2)
+        val circles = calculateCircles(mMatrix)
+        //val circles = listOf<Circle>(Circle(300f, PointF(-50f,0f)), Circle(300f, PointF(-100f,0f)), Circle(150f, PointF(-25f,-300f)))
+        circlesPaint.color = mYAxisColor
+        circlesPaint.style = Paint.Style.STROKE
+        circlesPaint.strokeWidth = context.dpToPx(1)
+        drawCircles(circles, canvas, origin)
     }
 
-    private fun drawAxis(canvas: Canvas?) {
+    private fun drawAxis(canvas: Canvas?, origin:PointF) {
         val width = width
         val height = height
-        paint.style = Paint.Style.STROKE
-        paint.strokeWidth = 2f
-        paint.color = mXAxisColor
-        canvas?.drawLine(0f, height.toFloat() / 2, width.toFloat(), height.toFloat() / 2, paint)
-        paint.color = mYAxisColor
-        canvas?.drawLine(width.toFloat() / 2, 0f, width.toFloat() / 2, height.toFloat(), paint)
+        axisPaint.style = Paint.Style.STROKE
+        axisPaint.strokeWidth = context.dpToPx(1)
+        axisPaint.color = mXAxisColor
+        canvas?.drawLine(0f, origin.y, width.toFloat(), origin.y, axisPaint)
+        canvas?.drawLine(width.toFloat(), origin.y, width.toFloat()-context.dpToPx(8), origin.y-context.dpToPx(2), axisPaint)
+        canvas?.drawLine(width.toFloat(), origin.y, width.toFloat()-context.dpToPx(8), origin.y+context.dpToPx(2), axisPaint)
+
+        axisPaint.color = mYAxisColor
+        canvas?.drawLine(origin.x, 0f, origin.x, height.toFloat(), axisPaint)
+        canvas?.drawLine(origin.x, 0f, origin.x - context.dpToPx(2), context.dpToPx(8), axisPaint)
+        canvas?.drawLine(origin.x, 0f, origin.x + context.dpToPx(2), context.dpToPx(8), axisPaint)
+        axisPaint.style = Paint.Style.FILL
+        axisPaint.strokeWidth = 0f
+        axisPaint.color = Color.BLACK
+        canvas?.drawText("(0, 0)", origin.x+ context.dpToPx(2), origin.y - context.dpToPx(2), axisPaint)
     }
 
-
-    @ExperimentalUnsignedTypes
-    fun drawCircles(m: Matrix, canvas: Canvas?) {
-        paint.color = mGraphColor
+    fun calculateCircles(m: Matrix):MutableList<Circle>{
+        val rez = mutableListOf<Circle>()
         val arrFr: MutableList<MutableList<Fraction>> = mutableListOf()
-        var minX: Fraction
-        var minY: Fraction
-        var maxX: Fraction
-        var maxY: Fraction
-        minX = Fraction()
-        minY = Fraction()
-        maxX = Fraction()
-        maxY = Fraction()
         mMatrix = m.copy()
-        var mult = 1.0
         var r = Fraction()
         var a = Fraction()
-        for (i in 0 until m.numColumns) {
-            for (j in 0 until m.numColumns) {
-                if (i != j) {
-                    a = m[i,j].copy()
-                    if (a < 0) {
-                        a *= -1
-                    }
-                    r += a
-                }
-            }
-            a = m[i, i].copy()
-            if (min((width - 10) / ((r + if (a < 0) (-a) else a)*2).toDouble(), (height - 10) / (r*2).toDouble()
-                ) <= mult || mult == 1.0
-            ) {
-                mult = min(
-                    (width - 10) / ((r + if (a < 0) -a else a)*2).toDouble(), (height - 10) / (r * 2).toDouble()
-                )
-            }
-            r = Fraction()
-            a = Fraction()
-        }
+
         for (i in 0 until m.numColumns) {
             for (j in 0 until m.numColumns) {
                 if (i != j) {
@@ -128,20 +117,76 @@ class GershgorinView @JvmOverloads constructor(context: Context,
             }
             a = m[i, i].copy()
             arrFr.add(mutableListOf())
-            minX = Fraction.min(minX, a - r)
-            minY = Fraction.min(minY, r)
-            maxX = Fraction.max(maxX, a + r)
-            maxY = Fraction.max(maxY, r)
             arrFr[arrFr.size - 1].add(a)
             arrFr[arrFr.size - 1].add(r.copy())
             r = Fraction()
         }
         for (ar in arrFr) {
-            canvas?.drawCircle((ar[0].toDouble() * mult).toFloat() + width / 2,
-                height.toFloat() / 2,
-                (ar[1].toDouble() * mult).toFloat(), paint
-            )
+            rez.add(Circle((ar[1]).toFloat(), PointF((ar[0].toFloat()),0f)))
         }
+        return rez
+    }
+
+    @ExperimentalUnsignedTypes
+    fun drawCircles(circles: List<Circle>, canvas: Canvas?, origin:PointF) {
+        val marg = context.dpToPx(8)
+        circlesPaint.color = mGraphColor
+        var minX = circles[0].anchor.x - circles[0].radius
+        var minY = circles[0].anchor.y - circles[0].radius
+        var maxX = circles[0].anchor.x + circles[0].radius
+        var maxY = circles[0].anchor.y + circles[0].radius
+        var mult = 1.0f
+        for (c in circles) {
+            minX = min(minX, c.anchor.x - c.radius)
+            minY = min(minY, c.anchor.y - c.radius)
+            maxX = max(maxX, c.anchor.x + c.radius)
+            maxY = max(maxY, c.anchor.y + c.radius)
+        }
+        mult = (height-2*marg) / abs(maxY - minY)
+
+        if (width < mult*abs(maxX - minX)){
+            mult = (width-2*marg) / abs(maxX - minX)
+
+        }
+        minX *= mult
+        minY *= mult
+        maxX *= mult
+        maxY *= mult
+
+        origin.x = (width - maxX - minX)/2
+        origin.y = (height + maxY + minY)/2
+        drawAxis(canvas, origin)
+        for (c in circles) {
+            canvas?.drawCircle(origin.x + c.anchor.x*mult,
+                origin.y - c.anchor.y*mult,
+                c.radius*mult, circlesPaint)
+            canvas?.drawLine(origin.x + c.anchor.x*mult - context.dpToPx(2),
+                origin.y - c.anchor.y*mult - context.dpToPx(2),
+                origin.x + c.anchor.x*mult + context.dpToPx(2),
+                origin.y - c.anchor.y*mult + context.dpToPx(2),
+            circlesPaint)
+            canvas?.drawLine(origin.x + c.anchor.x*mult + context.dpToPx(2),
+                origin.y - c.anchor.y*mult - context.dpToPx(2),
+                origin.x + c.anchor.x*mult - context.dpToPx(2),
+                origin.y - c.anchor.y*mult + context.dpToPx(2),
+                circlesPaint)
+        }
+//        circlesPaint.style = Paint.Style.FILL
+//        circlesPaint.color = Color.BLACK
+//        circlesPaint.textSize = 20f
+//        canvas?.drawText(
+//            "minX=${minX * mult}, minY=${minY * mult}, maxX=${maxX * mult}, maxY=${maxY * mult}, mult=${mult}",
+//            0f,
+//            height.toFloat()-2*circlesPaint.textSize,
+//            circlesPaint
+//        )
+//        canvas?.drawText(
+//            "origin.x = ${origin.x}, origin.y = ${origin.y}, width=$width, height=$height",
+//            0f,
+//            height.toFloat()-circlesPaint.textSize,
+//            circlesPaint
+//        )
+
     }
 
     private fun initAttrs(context: Context, attrs: AttributeSet?) {
@@ -156,4 +201,11 @@ class GershgorinView @JvmOverloads constructor(context: Context,
             a.recycle()
         }
     }
+
+    inner class Circle(var radius: Float = 1.0f,
+                       var anchor: PointF = PointF(0f, 0f)) {
+
+    }
 }
+
+

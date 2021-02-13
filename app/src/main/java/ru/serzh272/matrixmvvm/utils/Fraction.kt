@@ -172,6 +172,11 @@ class Fraction {
     }
 
     @ExperimentalUnsignedTypes
+    operator fun times(n: Float): Float {
+        return this.toFloat() * n
+    }
+
+    @ExperimentalUnsignedTypes
     fun invert(): Fraction {
         val rez = Fraction(
             this.numerator,
@@ -255,6 +260,15 @@ class Fraction {
         return str.toDouble()
     }
 
+    @ExperimentalUnsignedTypes
+    fun toFloat(precision: Int = 2): Float {
+        val str = String.format(
+            Locale("en"),
+            "%.${precision}f",
+            this.numerator.toDouble() / this.denominator.toInt()
+        )
+        return str.toFloat()
+    }
     /*operator fun minusAssign(fr: Fraction) {
         val res: Fraction = this - fr
         this.numerator = res.numerator

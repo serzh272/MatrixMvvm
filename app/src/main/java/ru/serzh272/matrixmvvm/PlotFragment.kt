@@ -26,7 +26,6 @@ class PlotFragment : Fragment() {
         binding.gershgorinPlot.setOnClickListener{
             findNavController().navigate(R.id.mainFragment)
         }
-        // Inflate the layout for this fragment
         return binding.root
     }
 }
