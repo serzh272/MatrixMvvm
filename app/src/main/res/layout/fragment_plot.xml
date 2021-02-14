@@ -5,4 +5,4 @@
     android:id="@+id/gershgorin_plot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".PlotFragment"/>
+    tools:context=".fragments.PlotFragment"/>

@@ -50,7 +50,8 @@ class Fraction {
                 val dec = l[1].toIntOrNull()
                 val precision = l[1].length
                 this.denominator = 10.0.pow(precision).toUInt()
-                this.numerator = (dec ?: 0) + (i ?: 0) * this.denominator.toInt()
+                this.numerator = abs(dec ?: 0) + abs(i ?: 0) * this.denominator.toInt()
+                if (l[0].contains(Regex("^-"))) this.numerator *= -1
             }
             strFr == "" -> {
                 this.numerator = 0

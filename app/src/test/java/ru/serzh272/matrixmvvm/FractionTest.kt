@@ -118,6 +118,8 @@ class FractionTest {
         assertEquals(Fraction(5, 3u), Fraction("5/3"))
         assertEquals(Fraction(53, 10u), Fraction("5.3"))
         assertEquals(Fraction(106, 20u), Fraction("5,3"))
+        assertEquals(Fraction(-1, 2u), Fraction("-0.5"))
+        assertEquals(Fraction(-7, 2u), Fraction("-3.5"))
     }
 
     @ExperimentalUnsignedTypes

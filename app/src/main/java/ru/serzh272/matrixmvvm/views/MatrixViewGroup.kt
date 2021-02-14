@@ -7,7 +7,6 @@ import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Color
 import android.util.AttributeSet
-import android.util.Log
 import android.view.*
 import android.view.animation.LinearInterpolator
 import android.view.inputmethod.EditorInfo
@@ -126,7 +125,6 @@ class MatrixViewGroup @JvmOverloads constructor(
         mFractionViews = MutableList(numRows) { MutableList(numColumns) { FractionView(context) } }
         with(btnIncRowsCols) {
             this.setBackgroundResource(R.drawable.btn_right_bottom_bg)
-
             addView(this)
         }
         btnIncRowsCols.setOnTouchListener(this)
@@ -490,14 +488,14 @@ class MatrixViewGroup @JvmOverloads constructor(
             buttonThickness * 3 + lPadding,
             buttonThickness * 3
         )
-        btnDecRowsCols.z = 1.5f
+        btnDecRowsCols.elevation = 1.5f
         btnIncRowsCols.layout(
             initSize - buttonThickness * 3 + lPadding,
             measuredHeight - buttonThickness * 3,
             initSize + lPadding,
             measuredHeight
         )
-        btnIncRowsCols.z = 1.5f
+        btnIncRowsCols.elevation = 1.5f
         for (i in 0 until numRows) {
             for (j in 0 until numColumns) {
                 val left =
@@ -513,10 +511,10 @@ class MatrixViewGroup @JvmOverloads constructor(
                 mFractionViews[i][j].mode = mode
                 mFractionViews[i][j].pos.x = i
                 mFractionViews[i][j].pos.y = j
-                mFractionViews[i][j].z = 5.0f
+                mFractionViews[i][j].elevation = 5.0f
             }
         }
-        invalidate()
+        //invalidate()
     }
 
     private fun resolveSize(spec: Int): Int {
@@ -527,7 +525,6 @@ class MatrixViewGroup @JvmOverloads constructor(
             else -> MeasureSpec.getSize(spec)
         }
     }
-
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         initSize = if (resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT) {

@@ -1,4 +1,4 @@
-package ru.serzh272.matrixmvvm
+package ru.serzh272.matrixmvvm.fragments
 
 import android.os.Bundle
 import android.util.Log
@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
+import ru.serzh272.matrixmvvm.R
 import ru.serzh272.matrixmvvm.adapters.ViewPagerAdapter
 import ru.serzh272.matrixmvvm.databinding.FragmentMainBinding
 import ru.serzh272.matrixmvvm.exceptions.DeterminantZeroException
@@ -66,7 +67,6 @@ class MainFragment : Fragment() {
         viewPager = binding.viewPager
         val data = viewModel.loadData()
         viewPagerAdapter.updateData(data)
-        Log.d("M_MainActivity", "View updated with data $data")
         viewPagerAdapter.setOnDataChangedListener(object : ViewPagerAdapter.OnDataChangedListener {
             override fun onDataChanged(pos: Int, matrix: Matrix) {
                 viewModel.saveMatrix(pos, matrix)
@@ -193,7 +193,9 @@ class MainFragment : Fragment() {
                 viewPager.currentItem = 2
             }
             R.id.gershgorin_item -> {
-                val act = MainFragmentDirections.actionMainFragmentToPlotFragment(viewModel.loadMatrix(viewPager.currentItem))
+                val act = MainFragmentDirections.actionMainFragmentToPlotFragment(
+                    viewModel.loadMatrix(viewPager.currentItem)
+                )
                 findNavController().navigate(act)
             }
         }
@@ -203,7 +205,6 @@ class MainFragment : Fragment() {
     }
 
     private fun updateData(ind: Int, matr: Matrix) {
-        Log.d("M_MainActivity", "LiveDataChanged with $matr in $ind index")
 
     }
 

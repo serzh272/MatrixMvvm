@@ -1,4 +1,4 @@
-package ru.serzh272.matrixmvvm
+package ru.serzh272.matrixmvvm.fragments
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
+import ru.serzh272.matrixmvvm.R
 import ru.serzh272.matrixmvvm.databinding.FragmentPlotBinding
 
 class PlotFragment : Fragment() {
