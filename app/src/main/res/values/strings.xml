@@ -2,13 +2,14 @@
     <string name="app_name">Matrix Calculator</string>
     <string name="squared_matrix_exception_message">Matrix must be squared</string>
     <string name="determinant_text">Determinant</string>
-    <string name="inverse_text">Inverse</string>
-    <string name="frobenius_text">Frobenius</string>
-    <string name="upper_triangular_text">Upper triangular</string>
-    <string name="lower_triangular_text">Lower triangular</string>
+    <string name="inverse_text">Inverse matrix</string>
+    <string name="frobenius_text">Frobenius matrix</string>
+    <string name="upper_triangular_text">Upper triangular matrix</string>
+    <string name="lower_triangular_text">Lower triangular matrix</string>
     <string name="transpose_text">Transpose</string>
     <string name="gershgorin_circles_string">Gershgorin circles</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="copy_to_a_string">Copy to A</string>
+    <string name="copy_to_b_string">Copy to B</string>
+    <string name="copy_to_res_string">Copy to RES</string>
 
 </resources>

@@ -519,7 +519,7 @@ class MatrixViewGroup @JvmOverloads constructor(
 
     private fun resolveSize(spec: Int): Int {
         return when (MeasureSpec.getMode(spec)) {
-            MeasureSpec.UNSPECIFIED -> context.dpToPx(500).toInt()
+            MeasureSpec.UNSPECIFIED -> context.dpToPx(200).toInt()
             MeasureSpec.AT_MOST -> MeasureSpec.getSize(spec)
             MeasureSpec.EXACTLY -> MeasureSpec.getSize(spec)
             else -> MeasureSpec.getSize(spec)

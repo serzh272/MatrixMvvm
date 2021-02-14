@@ -27,6 +27,5 @@ object Repository {
         if (pos in matrixList.indices){
             matrixList[pos] = matrix
         }
-        Log.d("M_MainActivity", "Repository has data $matrixList")
     }
 }

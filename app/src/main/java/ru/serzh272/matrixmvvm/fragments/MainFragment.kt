@@ -77,7 +77,14 @@ class MainFragment : Fragment() {
         TabLayoutMediator(binding.tabLayout, viewPager) { tab, pos ->
             tab.text = viewModel.titles[pos]
         }.attach()
-        //TODO set onDataChangedListener for Matrix ViewGroup
+        viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback(){
+            override fun onPageSelected(position: Int) {
+                super.onPageSelected(position)
+                binding.btnToA.isEnabled = position != 0
+                binding.btnToB.isEnabled = position != 1
+                binding.btnToRes.isEnabled = position != 2
+            }
+        })
     }
 
     override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {
