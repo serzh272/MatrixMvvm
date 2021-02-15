@@ -1,33 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item
-        android:id="@+id/determinant_item"
-        android:title="@string/determinant_text"/>
-    <item
-        android:id="@+id/summ_item"
-        android:title="A + B"/>
-    <item
-        android:id="@+id/diff_item"
-        android:title="A - B"/>
-    <item
-        android:id="@+id/multiply_item"
-        android:title="A × B"/>
-    <item
-        android:id="@+id/inverse_item"
-        android:title="@string/inverse_text"/>
-    <item
-        android:id="@+id/frobenius_item"
-        android:title="@string/frobenius_text"/>
-    <item
-        android:id="@+id/upper_triangular_item"
-        android:title="@string/upper_triangular_text"/>
-    <item
-        android:id="@+id/lower_triangular_item"
-        android:title="@string/lower_triangular_text"/>
-    <item
-        android:id="@+id/transpose_item"
-        android:title="@string/transpose_text"/>
-    <item
-        android:id="@+id/gershgorin_item"
-        android:title="@string/gershgorin_circles_string"/>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item app:showAsAction="always"
+        android:title=""
+        android:icon="@drawable/ic_more_vert">
+        <menu>
+            <item
+                android:id="@+id/determinant_item"
+                android:title="@string/determinant_text"
+                android:icon="@drawable/ic_determinant"/>
+            <item
+                android:id="@+id/summ_item"
+                android:title="A + B"
+                android:icon="@drawable/ic_add"/>
+            <item
+                android:id="@+id/diff_item"
+                android:title="A - B"
+                android:icon="@drawable/ic_remove"/>
+            <item
+                android:id="@+id/multiply_item"
+                android:title="A × B"/>
+            <item
+                android:id="@+id/inverse_item"
+                android:title="@string/inverse_text"
+                android:icon="@drawable/ic_inverse"/>
+            <item
+                android:id="@+id/frobenius_item"
+                android:title="@string/frobenius_text"/>
+            <item
+                android:id="@+id/upper_triangular_item"
+                android:title="@string/upper_triangular_text"/>
+            <item
+                android:id="@+id/lower_triangular_item"
+                android:title="@string/lower_triangular_text"/>
+            <item
+                android:id="@+id/transpose_item"
+                android:title="@string/transpose_text"
+                android:icon="@drawable/ic_transpose"/>
+            <item
+                android:id="@+id/gershgorin_item"
+                android:title="@string/gershgorin_circles_string"
+                android:icon="@drawable/ic_gershgorin"/>
+        </menu>
+    </item>
 </menu>

@@ -90,6 +90,8 @@ class MainFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {
         val inflater = menuInflater
         inflater.inflate(R.menu.menu, menu)
+        //menu.findItem(R.id.summ_item).icon = resources.getDrawable(R.drawable.ic_add, context?.theme)
+        //menu.findItem(R.id.diff_item).icon = resources.getDrawable(R.drawable.ic_remove, context?.theme)
         super.onCreateOptionsMenu(menu, inflater)
     }
 
