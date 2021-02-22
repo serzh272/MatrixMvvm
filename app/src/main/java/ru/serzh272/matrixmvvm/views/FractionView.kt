@@ -13,6 +13,7 @@ import com.google.android.material.color.MaterialColors
 import ru.serzh272.matrix.Fraction
 import ru.serzh272.matrixmvvm.R
 import ru.serzh272.matrixmvvm.extensions.dpToPx
+import ru.serzh272.matrixmvvm.repositories.PreferencesRepository
 import ru.serzh272.matrixmvvm.utils.MotionEventsDebugger
 import kotlin.math.abs
 import kotlin.math.max
@@ -24,9 +25,10 @@ class FractionView @JvmOverloads constructor(context: Context,
 ): MaterialButton(context,attrs, defStyleAttr){
     var fractionTextColor: Int = Color.WHITE
     var backColor: Int = Color.LTGRAY
-    var mode: Int = 2
+    var mode = Fraction.FractionType.COMMON
     var size:Int = 0
-    var mFraction = Fraction(2, 3u)
+    var mFraction = Fraction(0, 1u)
+    var precision = 2
     private var sp:Float = 0.0f
     private var anchor: Point = Point(0, 0)
     var pos:Point = Point()
@@ -42,8 +44,7 @@ class FractionView @JvmOverloads constructor(context: Context,
             mFraction.numerator = a.getInteger(R.styleable.FractionViewLayout_numerator, 0)
             mFraction.denominator = a.getInteger(R.styleable.FractionViewLayout_denominator, 1).toUInt()
             mFraction.normalize()
-            //presenter.mFraction.integ = a.getInteger(R.styleable.FractionViewLayout_integ, 0).toLong()
-            mode = a.getInteger(R.styleable.FractionViewLayout_mode, 1)
+            mode = Fraction.FractionType.values()[a.getInteger(R.styleable.FractionViewLayout_mode, 0)]
             backColor = a.getColor(R.styleable.FractionViewLayout_color, Color.WHITE)
             fractionTextColor = a.getColor(R.styleable.FractionViewLayout_text_color, MaterialColors.getColor(context, R.attr.colorOnPrimary, Color.WHITE))
             sp = a.getDimension(R.styleable.FractionViewLayout_fraction_space, 2.0f)
@@ -64,10 +65,11 @@ class FractionView @JvmOverloads constructor(context: Context,
     }
 
     fun showFraction(canvas: Canvas, fraction: Fraction) {
+        precision = PreferencesRepository.getPrefs().precision
         val p = Paint(Paint.ANTI_ALIAS_FLAG)
         p.style = Paint.Style.STROKE
         p.strokeWidth = 0.0f
-        p.textSize = this.height.toFloat()/3
+        p.textSize = this.height.toFloat()/2
         p.typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD_ITALIC)
         p.textAlign = Paint.Align.CENTER
         anchor.x = this.width/2
@@ -84,13 +86,13 @@ class FractionView @JvmOverloads constructor(context: Context,
         p.color = backColor
         //canvas.drawRect(0.0f, 0.0f, this.width.toFloat(), this.height.toFloat(),p)
         p.setColor(fractionTextColor)
-        if ((fraction.denominator == 1u) or (mode == 3)){
-            txt = if (mode == 3){
+        if ((fraction.denominator == 1u) or (mode == Fraction.FractionType.DECIMAL)){
+            txt = if (mode == Fraction.FractionType.DECIMAL){
                 if (fraction.numerator%fraction.denominator.toLong() == 0L){
                     this.toString()
                 }
                 else{
-                    "%.3f".format(fraction.toDouble())
+                    "%.${precision}f".format(fraction.toDouble(precision)).replace(Regex("0*$"), "")
                 }
             }
             else{
@@ -106,7 +108,7 @@ class FractionView @JvmOverloads constructor(context: Context,
         }
         else{
             var (integ, numerator, denominator) = Triple(0, fraction.numerator, fraction.denominator)
-            if (mode == 2){
+            if (mode == Fraction.FractionType.MIXED){
                 val frVals = fraction.getValues()
                 integ = frVals.first
                 numerator = frVals.second

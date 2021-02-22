@@ -1,29 +1,23 @@
 package ru.serzh272.matrixmvvm.views
 
 import android.animation.LayoutTransition
-import android.animation.ValueAnimator
 import android.app.AlertDialog
 import android.content.Context
 import android.content.res.Configuration
 import android.graphics.Color
 import android.util.AttributeSet
 import android.view.*
-import android.view.animation.LinearInterpolator
 import android.view.inputmethod.EditorInfo
-import android.widget.*
+import android.widget.FrameLayout
 import androidx.core.content.ContextCompat
-import androidx.core.view.children
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.textview.MaterialTextView
-import ru.serzh272.matrix.*
+import ru.serzh272.matrix.Fraction
 import ru.serzh272.matrixmvvm.R
 import ru.serzh272.matrixmvvm.extensions.dpToPx
 import ru.serzh272.matrixmvvm.utils.Matrix
-import ru.serzh272.matrixmvvm.utils.MotionEventsDebugger
-import java.util.*
-import java.util.logging.Handler
 import kotlin.math.min
 
 @ExperimentalUnsignedTypes
@@ -43,6 +37,7 @@ class MatrixViewGroup @JvmOverloads constructor(
     private var detector: GestureDetector = GestureDetector(context, MyGestureDetector())
     private var initSize: Int = 0
     private var innerPadding: Int = context.dpToPx(DEFAULT_SPACING).toInt()
+    private var frMode = Fraction.FractionType.DECIMAL
     var matrix = Matrix()
         get() {
             val field = Matrix(this.numRows, this.numColumns)
@@ -508,7 +503,7 @@ class MatrixViewGroup @JvmOverloads constructor(
                         topPadding + buttonThickness
                 mFractionViews[i][j].setPadding(0, 0, 0, 0)
                 mFractionViews[i][j].layout(left, top, right, bottom)
-                mFractionViews[i][j].mode = mode
+                mFractionViews[i][j].mode = frMode
                 mFractionViews[i][j].pos.x = i
                 mFractionViews[i][j].pos.y = j
                 mFractionViews[i][j].elevation = 5.0f
@@ -561,5 +556,4 @@ class MatrixViewGroup @JvmOverloads constructor(
             return true
         }
     }
-
 }

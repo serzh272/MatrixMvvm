@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item app:showAsAction="always"
+    <item
+        android:id="@+id/prefs_item"
         android:title=""
-        android:icon="@drawable/ic_more_vert">
+        android:icon="@drawable/ic_settings"
+        app:showAsAction="always"
+        />
+    <item
+        android:title=""
+        android:icon="@drawable/ic_more_vert"
+        app:showAsAction="ifRoom">
         <menu>
             <item
                 android:id="@+id/determinant_item"
@@ -19,20 +26,25 @@
                 android:icon="@drawable/ic_remove"/>
             <item
                 android:id="@+id/multiply_item"
-                android:title="A × B"/>
+                android:title="A × B"
+                android:icon="@drawable/ic_mult"/>
             <item
                 android:id="@+id/inverse_item"
                 android:title="@string/inverse_text"
                 android:icon="@drawable/ic_inverse"/>
             <item
                 android:id="@+id/frobenius_item"
-                android:title="@string/frobenius_text"/>
+                android:title="@string/frobenius_text"
+                android:icon="@drawable/ic_frobenius"/>
             <item
                 android:id="@+id/upper_triangular_item"
-                android:title="@string/upper_triangular_text"/>
+                android:title="@string/upper_triangular_text"
+                android:icon="@drawable/ic_upper_triangular"
+                />
             <item
                 android:id="@+id/lower_triangular_item"
-                android:title="@string/lower_triangular_text"/>
+                android:title="@string/lower_triangular_text"
+                android:icon="@drawable/ic_lower_triangular"/>
             <item
                 android:id="@+id/transpose_item"
                 android:title="@string/transpose_text"

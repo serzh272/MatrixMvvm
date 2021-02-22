@@ -11,5 +11,7 @@
     <string name="copy_to_a_string">Copy to A</string>
     <string name="copy_to_b_string">Copy to B</string>
     <string name="copy_to_res_string">Copy to RES</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 </resources>

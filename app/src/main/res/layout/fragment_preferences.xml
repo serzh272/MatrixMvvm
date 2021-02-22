@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".fragments.PreferencesFragment"
+    android:orientation="vertical"
+    android:padding="8dp">
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/switch_mode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Use simple fractions"
+        android:checked="true"/>
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/switch_type_fraction"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Use mixed fractions"/>
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/ti_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        tools:visibility="visible">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/ti_et_precision"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter precision"
+            android:lines="1"
+            android:imeOptions="actionDone"
+            android:inputType="number"/>
+    </com.google.android.material.textfield.TextInputLayout>
+    <ru.serzh272.matrixmvvm.views.FractionView
+        android:id="@+id/fraction_preview"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/spacing_maximum_64"
+        app:denominator="3"
+        app:numerator="5"/>
+</LinearLayout>

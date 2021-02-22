@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
+import ru.serzh272.matrixmvvm.App
 import ru.serzh272.matrixmvvm.R
 import ru.serzh272.matrixmvvm.adapters.ViewPagerAdapter
 import ru.serzh272.matrixmvvm.databinding.FragmentMainBinding
@@ -19,17 +20,18 @@ import ru.serzh272.matrixmvvm.exceptions.MatrixDimensionsException
 import ru.serzh272.matrixmvvm.utils.Matrix
 import ru.serzh272.matrixmvvm.utils.MyToast
 import ru.serzh272.matrixmvvm.viewmodels.MatrixViewModel
+import ru.serzh272.matrixmvvm.viewmodels.PreferencesViewModel
 
 @ExperimentalUnsignedTypes
 class MainFragment : Fragment() {
     private lateinit var binding: FragmentMainBinding
 
     lateinit var viewModel: MatrixViewModel
+    lateinit var prefsViewModel: PreferencesViewModel
     lateinit var viewPager: ViewPager2
     var viewPagerAdapter: ViewPagerAdapter = ViewPagerAdapter()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setHasOptionsMenu(true)
         //setContentView(root)
     }
@@ -53,6 +55,10 @@ class MainFragment : Fragment() {
         viewModel.matrixLiveData2.observe(viewLifecycleOwner, Observer { updateData(1, it) })
         viewModel.matrixLiveData3.observe(viewLifecycleOwner, Observer { updateData(2, it) })
         viewModel.titlesLiveData.observe(viewLifecycleOwner, Observer { updateTitles(it) })
+        prefsViewModel = ViewModelProvider(this).get(PreferencesViewModel::class.java)
+        prefsViewModel.prefsLiveData.observe(viewLifecycleOwner, Observer {
+
+        })
     }
 
     private fun updateTitles(titles: MutableList<String>?) {
@@ -205,6 +211,10 @@ class MainFragment : Fragment() {
                 val act = MainFragmentDirections.actionMainFragmentToPlotFragment(
                     viewModel.loadMatrix(viewPager.currentItem)
                 )
+                findNavController().navigate(act)
+            }
+            R.id.prefs_item -> {
+                val act = MainFragmentDirections.actionMainFragmentToPreferencesFragment()
                 findNavController().navigate(act)
             }
         }

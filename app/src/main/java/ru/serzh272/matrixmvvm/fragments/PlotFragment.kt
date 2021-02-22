@@ -13,10 +13,6 @@ import ru.serzh272.matrixmvvm.databinding.FragmentPlotBinding
 class PlotFragment : Fragment() {
     private val args by navArgs<PlotFragmentArgs>()
     private lateinit var binding:FragmentPlotBinding
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
