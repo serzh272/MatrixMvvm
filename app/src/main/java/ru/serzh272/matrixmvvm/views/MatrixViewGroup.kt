@@ -34,10 +34,12 @@ class MatrixViewGroup @JvmOverloads constructor(
         private const val MAX_DIMENSION = 10
         private const val MIN_DIMENSION = 1
     }
+
+    var precision: Int = 2
     private var detector: GestureDetector = GestureDetector(context, MyGestureDetector())
     private var initSize: Int = 0
     private var innerPadding: Int = context.dpToPx(DEFAULT_SPACING).toInt()
-    private var frMode = Fraction.FractionType.DECIMAL
+    var frMode = Fraction.FractionType.DECIMAL
     var matrix = Matrix()
         get() {
             val field = Matrix(this.numRows, this.numColumns)
@@ -504,6 +506,7 @@ class MatrixViewGroup @JvmOverloads constructor(
                 mFractionViews[i][j].setPadding(0, 0, 0, 0)
                 mFractionViews[i][j].layout(left, top, right, bottom)
                 mFractionViews[i][j].mode = frMode
+                mFractionViews[i][j].precision = precision
                 mFractionViews[i][j].pos.x = i
                 mFractionViews[i][j].pos.y = j
                 mFractionViews[i][j].elevation = 5.0f

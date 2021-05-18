@@ -8,15 +8,18 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
+import ru.serzh272.matrix.Fraction
 import ru.serzh272.matrixmvvm.App
 import ru.serzh272.matrixmvvm.R
 import ru.serzh272.matrixmvvm.adapters.ViewPagerAdapter
 import ru.serzh272.matrixmvvm.databinding.FragmentMainBinding
 import ru.serzh272.matrixmvvm.exceptions.DeterminantZeroException
 import ru.serzh272.matrixmvvm.exceptions.MatrixDimensionsException
+import ru.serzh272.matrixmvvm.repositories.PreferencesRepository
 import ru.serzh272.matrixmvvm.utils.Matrix
 import ru.serzh272.matrixmvvm.utils.MyToast
 import ru.serzh272.matrixmvvm.viewmodels.MatrixViewModel
@@ -27,7 +30,6 @@ class MainFragment : Fragment() {
     private lateinit var binding: FragmentMainBinding
 
     lateinit var viewModel: MatrixViewModel
-    lateinit var prefsViewModel: PreferencesViewModel
     lateinit var viewPager: ViewPager2
     var viewPagerAdapter: ViewPagerAdapter = ViewPagerAdapter()
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -49,16 +51,13 @@ class MainFragment : Fragment() {
         return binding.root
     }
 
+
     private fun initViewModel() {
         viewModel = ViewModelProvider(this).get(MatrixViewModel::class.java)
         viewModel.matrixLiveData1.observe(viewLifecycleOwner, Observer { updateData(0, it) })
         viewModel.matrixLiveData2.observe(viewLifecycleOwner, Observer { updateData(1, it) })
         viewModel.matrixLiveData3.observe(viewLifecycleOwner, Observer { updateData(2, it) })
         viewModel.titlesLiveData.observe(viewLifecycleOwner, Observer { updateTitles(it) })
-        prefsViewModel = ViewModelProvider(this).get(PreferencesViewModel::class.java)
-        prefsViewModel.prefsLiveData.observe(viewLifecycleOwner, Observer {
-
-        })
     }
 
     private fun updateTitles(titles: MutableList<String>?) {
@@ -216,6 +215,7 @@ class MainFragment : Fragment() {
             R.id.prefs_item -> {
                 val act = MainFragmentDirections.actionMainFragmentToPreferencesFragment()
                 findNavController().navigate(act)
+                println("close settings")
             }
         }
         MyToast.toast?.show()

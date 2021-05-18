@@ -65,7 +65,6 @@ class FractionView @JvmOverloads constructor(context: Context,
     }
 
     fun showFraction(canvas: Canvas, fraction: Fraction) {
-        precision = PreferencesRepository.getPrefs().precision
         val p = Paint(Paint.ANTI_ALIAS_FLAG)
         p.style = Paint.Style.STROKE
         p.strokeWidth = 0.0f
