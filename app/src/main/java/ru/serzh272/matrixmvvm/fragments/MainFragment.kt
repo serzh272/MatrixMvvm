@@ -20,6 +20,7 @@ import ru.serzh272.matrixmvvm.databinding.FragmentMainBinding
 import ru.serzh272.matrixmvvm.exceptions.DeterminantZeroException
 import ru.serzh272.matrixmvvm.exceptions.MatrixDimensionsException
 import ru.serzh272.matrixmvvm.repositories.PreferencesRepository
+import ru.serzh272.matrixmvvm.repositories.Repository
 import ru.serzh272.matrixmvvm.utils.Matrix
 import ru.serzh272.matrixmvvm.utils.MyToast
 import ru.serzh272.matrixmvvm.viewmodels.MatrixViewModel
@@ -60,9 +61,9 @@ class MainFragment : Fragment() {
         viewModel.titlesLiveData.observe(viewLifecycleOwner, Observer { updateTitles(it) })
     }
 
-    private fun updateTitles(titles: MutableList<String>?) {
+    private fun updateTitles(titles: List<String>?) {
         for (i in 0 until binding.tabLayout.tabCount) {
-            binding.tabLayout.getTabAt(i)?.setText(titles?.get(i))
+            binding.tabLayout.getTabAt(i)?.text = titles?.get(i)
         }
     }
 
@@ -90,13 +91,23 @@ class MainFragment : Fragment() {
                 binding.btnToRes.isEnabled = position != 2
             }
         })
+        binding.btnToA.setOnClickListener {
+            viewPagerAdapter.updateMatrix(0, viewModel.loadMatrix(viewPager.currentItem).copy())
+            viewPager.currentItem = 0
+        }
+        binding.btnToB.setOnClickListener {
+            viewPagerAdapter.updateMatrix(1, viewModel.loadMatrix(viewPager.currentItem).copy())
+            viewPager.currentItem = 1
+        }
+        binding.btnToRes.setOnClickListener {
+            viewPagerAdapter.updateMatrix(2, viewModel.loadMatrix(viewPager.currentItem).copy())
+            viewPager.currentItem = 2
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {
         val inflater = menuInflater
         inflater.inflate(R.menu.menu, menu)
-        //menu.findItem(R.id.summ_item).icon = resources.getDrawable(R.drawable.ic_add, context?.theme)
-        //menu.findItem(R.id.diff_item).icon = resources.getDrawable(R.drawable.ic_remove, context?.theme)
         super.onCreateOptionsMenu(menu, inflater)
     }
 
@@ -201,10 +212,9 @@ class MainFragment : Fragment() {
             }
             R.id.transpose_item -> {
                 viewPagerAdapter.updateMatrix(
-                    2,
+                    viewPager.currentItem,
                     viewModel.loadMatrix(viewPager.currentItem).getTranspose()
                 )
-                viewPager.currentItem = 2
             }
             R.id.gershgorin_item -> {
                 val act = MainFragmentDirections.actionMainFragmentToPlotFragment(

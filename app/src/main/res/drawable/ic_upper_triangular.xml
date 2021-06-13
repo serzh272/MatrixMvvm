@@ -1,6 +1,6 @@
 <vector xmlns:tools="http://schemas.android.com/tools"
     android:height="24dp" android:viewportHeight="96"
-    android:tint="?attr/colorControlNormal"
+    android:tint="?attr/colorOnPrimary"
     android:viewportWidth="96" android:width="24dp" xmlns:android="http://schemas.android.com/apk/res/android"
     tools:ignore="VectorRaster">
     <path android:fillColor="@android:color/white" android:pathData="M96,86.5858V1C96,0.4477 95.5523,0 95,0H9.4142C8.5233,0 8.0772,1.0771 8.7071,1.7071L94.2929,87.2929C94.9229,87.9229 96,87.4767 96,86.5858Z"/>

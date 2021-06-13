@@ -6,30 +6,66 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".fragments.PreferencesFragment"
     android:orientation="vertical"
+
     android:padding="8dp">
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/switch_mode"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Use simple fractions"
-        android:checked="true"/>
+        android:text="@string/use_simple_fractions"
+        android:checked="true"
+        android:paddingBottom="4dp"/>
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/switch_type_fraction"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Use mixed fractions"/>
+        android:text="@string/use_mixed_fractions"
+        android:paddingBottom="4dp"/>
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/ti_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="gone"
-        tools:visibility="visible">
+        tools:visibility="visible"
+        android:paddingBottom="4dp">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/ti_et_precision"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Enter precision"
+            android:hint="@string/enter_precision"
+            android:lines="1"
+            android:imeOptions="actionDone"
+            android:inputType="number"            />
+    </com.google.android.material.textfield.TextInputLayout>
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/ti_layout_num_rows"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        android:paddingBottom="4dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/ti_et_num_rows"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/set_num_rows"
+            android:lines="1"
+            android:imeOptions="actionDone"
+            android:inputType="number"/>
+    </com.google.android.material.textfield.TextInputLayout>
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/ti_layout_num_columns"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        android:paddingBottom="4dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/ti_et_num_columns"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/set_num_cols"
             android:lines="1"
             android:imeOptions="actionDone"
             android:inputType="number"/>

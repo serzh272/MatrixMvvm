@@ -1,8 +1,5 @@
 package ru.serzh272.matrixmvvm.repositories
 
-import android.content.SharedPreferences
-import androidx.preference.PreferenceManager
-import ru.serzh272.matrixmvvm.App
 import ru.serzh272.matrixmvvm.data.AppSettings
 import ru.serzh272.matrixmvvm.data.PrefManager
 
@@ -22,6 +19,6 @@ object PreferencesRepository {
             isMixedFraction = prefs.isMixed,
             precision = prefs.precision,
             columns = prefs.cols,
-            rows = prefs.cols)
+            rows = prefs.rows)
     }
 }

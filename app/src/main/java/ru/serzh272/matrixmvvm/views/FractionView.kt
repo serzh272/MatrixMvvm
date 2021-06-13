@@ -34,7 +34,7 @@ class FractionView @JvmOverloads constructor(context: Context,
     var pos:Point = Point()
     init {
         initAttrs(context,attrs)
-        setBackgroundResource(R.drawable.button_bg)
+        setBackgroundResource(R.drawable.ripple_button_bg)
     }
 
     private fun initAttrs(context: Context?, attrs: AttributeSet?){

@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Матричный калькулятор</string>
-    <string name="squared_matrix_exception_message">Матрица должна быть квадратной</string>
     <string name="determinant_text">Определитель</string>
     <string name="inverse_text">Обратная матрица</string>
     <string name="frobenius_text">Матрица Фробениуса</string>
@@ -9,7 +8,22 @@
     <string name="lower_triangular_text">Нижняя треугольная матрица</string>
     <string name="transpose_text">Транспонировать</string>
     <string name="gershgorin_circles_string">Круги Гершгорина</string>
-    <string name="copy_to_a_string">Копировать в A</string>
-    <string name="copy_to_b_string">Копировать в B</string>
-    <string name="copy_to_res_string">Копировать в Res</string>
+    <string name="copy_to_a_string">Копировать\n
+        в [A]</string>
+    <string name="copy_to_b_string">Копировать\n
+        в [B]</string>
+    <string name="copy_to_res_string">Копировать\n
+        в [Result]</string>
+    <string name="not_squared">Матрица должна быть квадратной</string>
+    <string name="not_equals_sizes">Размерности матриц не совпадают</string>
+    <string name="not_equals_cols_rowssizes">Число столбцов матрицы [A] должно быть равным числу строк матрицы [B]</string>
+    <string name="determinant_is_zero">Определитель равен 0</string>
+    <string name="unable_matrix_transform">Трансформация матрицы недоступна</string>
+    <string name="enter_precision">Точность</string>
+    <string name="use_mixed_fractions">Использовать смешанные дроби</string>
+    <string name="use_simple_fractions">Использовать простые дроби</string>
+    <string name="enter_precision_error">Введите число от 0 до 4</string>
+    <string name="set_num_rows">Количество строк по умолчанию</string>
+    <string name="set_num_cols">Количество столбцов по умолчанию</string>
+    <string name="enter_num_rows_columns_error">"Введите число от 1 до 10"</string>
 </resources>

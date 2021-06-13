@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Matrix Calculator</string>
-    <string name="squared_matrix_exception_message">Matrix must be squared</string>
     <string name="determinant_text">Determinant</string>
     <string name="inverse_text">Inverse matrix</string>
     <string name="frobenius_text">Frobenius matrix</string>
@@ -8,10 +7,22 @@
     <string name="lower_triangular_text">Lower triangular matrix</string>
     <string name="transpose_text">Transpose</string>
     <string name="gershgorin_circles_string">Gershgorin circles</string>
-    <string name="copy_to_a_string">Copy to A</string>
-    <string name="copy_to_b_string">Copy to B</string>
-    <string name="copy_to_res_string">Copy to RES</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-
+    <string name="copy_to_a_string">Copy\n
+        to [A]</string>
+    <string name="copy_to_b_string">Copy\n
+        to [B]</string>
+    <string name="copy_to_res_string">Copy\n
+        to [Result]</string>
+    <string name="not_squared">Matrix must be squared</string>
+    <string name="not_equals_sizes">Matrix sizes not equals</string>
+    <string name="not_equals_cols_rowssizes">Columns number of [A] must be equal rows number of [B]</string>
+    <string name="determinant_is_zero">Determinant equals 0</string>
+    <string name="unable_matrix_transform">Unable to transform matrix</string>
+    <string name="enter_precision">Precision</string>
+    <string name="use_mixed_fractions">Use mixed fractions</string>
+    <string name="use_simple_fractions">Use simple fractions</string>
+    <string name="enter_precision_error">Enter number from 0 to 4</string>
+    <string name="set_num_rows">Default number of rows</string>
+    <string name="set_num_cols">Default number of columns</string>
+    <string name="enter_num_rows_columns_error">"Enter number from 1 to 10 "</string>
 </resources>

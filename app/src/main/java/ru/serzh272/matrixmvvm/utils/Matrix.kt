@@ -4,6 +4,7 @@ import android.content.res.Resources
 import android.os.Parcel
 import android.os.Parcelable
 import ru.serzh272.matrix.Fraction
+import ru.serzh272.matrixmvvm.App
 import ru.serzh272.matrixmvvm.R
 import ru.serzh272.matrixmvvm.exceptions.DeterminantZeroException
 import ru.serzh272.matrixmvvm.exceptions.MatrixDimensionsException
@@ -46,7 +47,7 @@ class Matrix(r: Int = 3, c: Int = 3) : Parcelable {
     @Throws(MatrixDimensionsException::class)
     operator fun plus(m: Matrix): Matrix {
         if ((this.numColumns != m.numColumns) or (this.numRows != m.numRows)) {
-            throw MatrixDimensionsException("Matrix sizes not equals")
+            throw MatrixDimensionsException(App.applicationContext().resources.getString(R.string.not_equals_sizes))
         } else {
             val res = Matrix(this.numRows, this.numColumns)
             for (i: Int in 0 until this.numRows) {
@@ -61,7 +62,7 @@ class Matrix(r: Int = 3, c: Int = 3) : Parcelable {
     @Throws(MatrixDimensionsException::class)
     operator fun minus(m: Matrix): Matrix {
         if ((this.numColumns != m.numColumns) or (this.numRows != m.numRows)) {
-            throw MatrixDimensionsException("Matrix sizes not equals")
+            throw MatrixDimensionsException(App.applicationContext().resources.getString(R.string.not_equals_sizes))
         } else {
             val res = Matrix(this.numRows, this.numColumns)
             for (i: Int in 0 until this.numRows) {
@@ -104,7 +105,7 @@ class Matrix(r: Int = 3, c: Int = 3) : Parcelable {
                 return this * m[0, 0]
             }
             else -> {
-                throw MatrixDimensionsException("Columns number of M1 must be equal Columns number of M2")
+                throw MatrixDimensionsException(App.applicationContext().resources.getString(R.string.not_equals_cols_rowssizes))
             }
         }
     }
@@ -348,7 +349,7 @@ class Matrix(r: Int = 3, c: Int = 3) : Parcelable {
             }
             return d
         } else {
-            throw MatrixDimensionsException("Matrix must be squared")
+            throw MatrixDimensionsException(App.applicationContext().resources.getString(R.string.not_squared))
         }
     }
 
@@ -366,7 +367,7 @@ class Matrix(r: Int = 3, c: Int = 3) : Parcelable {
                 }
             }
         } else {
-            throw MatrixDimensionsException("Matrix must be squared")
+            throw MatrixDimensionsException(App.applicationContext().resources.getString(R.string.not_squared))
         }
     }
 
@@ -376,7 +377,7 @@ class Matrix(r: Int = 3, c: Int = 3) : Parcelable {
     fun transformMatrix(type: TransformType): Matrix {
         val dt: Fraction = this.determinant()
         if (dt.equals(0)) {
-            throw DeterminantZeroException("Determinant equals 0")
+            throw DeterminantZeroException(App.applicationContext().resources.getString(R.string.determinant_is_zero))
         } else {
             var m = Fraction()
             val n: Int = this.numColumns
@@ -473,14 +474,14 @@ class Matrix(r: Int = 3, c: Int = 3) : Parcelable {
                     try {
                         (e * mFr) * (e.transformMatrix(TransformType.INVERSE))
                     } catch (ex: DeterminantZeroException) {
-                        throw DeterminantZeroException("Unable to transform matrix")
+                        throw DeterminantZeroException(App.applicationContext().resources.getString(R.string.unable_matrix_transform))
                         Matrix()
                     }
                 }
             }
             return mFr
         } else {
-            throw MatrixDimensionsException("Matrix must be squared")
+            throw MatrixDimensionsException(App.applicationContext().resources.getString(R.string.not_squared))
         }
     }
 

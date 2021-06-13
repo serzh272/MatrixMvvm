@@ -12,7 +12,6 @@ class PreferencesViewModel: ViewModel() {
     }
 
     fun handleSetPrecision(prec:Int){
-
         val appSettings = prefsRepo.getSettings()
         if (prec != appSettings.precision) {
             appSettings.precision = prec
