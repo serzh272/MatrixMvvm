@@ -1,64 +1,53 @@
 package ru.serzh272.matrixmvvm.fragments
 
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.NavOptions
 import androidx.navigation.fragment.findNavController
 import androidx.viewpager2.widget.ViewPager2
 import com.google.android.material.tabs.TabLayoutMediator
-import ru.serzh272.matrix.Fraction
-import ru.serzh272.matrixmvvm.App
 import ru.serzh272.matrixmvvm.R
 import ru.serzh272.matrixmvvm.adapters.ViewPagerAdapter
 import ru.serzh272.matrixmvvm.databinding.FragmentMainBinding
 import ru.serzh272.matrixmvvm.exceptions.DeterminantZeroException
 import ru.serzh272.matrixmvvm.exceptions.MatrixDimensionsException
-import ru.serzh272.matrixmvvm.repositories.PreferencesRepository
-import ru.serzh272.matrixmvvm.repositories.Repository
 import ru.serzh272.matrixmvvm.utils.Matrix
 import ru.serzh272.matrixmvvm.utils.MyToast
 import ru.serzh272.matrixmvvm.viewmodels.MatrixViewModel
-import ru.serzh272.matrixmvvm.viewmodels.PreferencesViewModel
 
 @ExperimentalUnsignedTypes
 class MainFragment : Fragment() {
     private lateinit var binding: FragmentMainBinding
 
     lateinit var viewModel: MatrixViewModel
-    lateinit var viewPager: ViewPager2
-    var viewPagerAdapter: ViewPagerAdapter = ViewPagerAdapter()
+    private lateinit var viewPager: ViewPager2
+    private var viewPagerAdapter: ViewPagerAdapter = ViewPagerAdapter()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setHasOptionsMenu(true)
-        //setContentView(root)
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentMainBinding.inflate(layoutInflater)
         initViewModel()
         initViews()
         // Inflate the layout for this fragment
-
-
         return binding.root
     }
 
 
     private fun initViewModel() {
         viewModel = ViewModelProvider(this).get(MatrixViewModel::class.java)
-        viewModel.matrixLiveData1.observe(viewLifecycleOwner, Observer { updateData(0, it) })
-        viewModel.matrixLiveData2.observe(viewLifecycleOwner, Observer { updateData(1, it) })
-        viewModel.matrixLiveData3.observe(viewLifecycleOwner, Observer { updateData(2, it) })
-        viewModel.titlesLiveData.observe(viewLifecycleOwner, Observer { updateTitles(it) })
+        viewModel.matrixLiveData1.observe(viewLifecycleOwner, { updateData(0, it) })
+        viewModel.matrixLiveData2.observe(viewLifecycleOwner, { updateData(1, it) })
+        viewModel.matrixLiveData3.observe(viewLifecycleOwner, { updateData(2, it) })
+        viewModel.titlesLiveData.observe(viewLifecycleOwner, { updateTitles(it) })
     }
 
     private fun updateTitles(titles: List<String>?) {
@@ -68,7 +57,7 @@ class MainFragment : Fragment() {
     }
 
 
-    fun initViews() {
+    private fun initViews() {
         (activity as AppCompatActivity).setSupportActionBar(binding.toolBar)
         viewPager = binding.viewPager
         val data = viewModel.loadData()
@@ -106,9 +95,8 @@ class MainFragment : Fragment() {
     }
 
     override fun onCreateOptionsMenu(menu: Menu, menuInflater: MenuInflater) {
-        val inflater = menuInflater
-        inflater.inflate(R.menu.menu, menu)
-        super.onCreateOptionsMenu(menu, inflater)
+        menuInflater.inflate(R.menu.menu, menu)
+        super.onCreateOptionsMenu(menu, menuInflater)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -225,7 +213,6 @@ class MainFragment : Fragment() {
             R.id.prefs_item -> {
                 val act = MainFragmentDirections.actionMainFragmentToPreferencesFragment()
                 findNavController().navigate(act)
-                println("close settings")
             }
         }
         MyToast.toast?.show()

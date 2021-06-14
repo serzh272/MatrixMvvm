@@ -1,30 +1,26 @@
 package ru.serzh272.matrixmvvm.fragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.widget.addTextChangedListener
-import androidx.core.widget.doOnTextChanged
-import androidx.lifecycle.Observer
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import ru.serzh272.matrix.Fraction
-import ru.serzh272.matrixmvvm.App
 import ru.serzh272.matrixmvvm.R
 import ru.serzh272.matrixmvvm.data.AppSettings
 import ru.serzh272.matrixmvvm.databinding.FragmentPreferencesBinding
-import ru.serzh272.matrixmvvm.repositories.PreferencesRepository
+import ru.serzh272.matrixmvvm.utils.Fraction
 import ru.serzh272.matrixmvvm.viewmodels.PreferencesViewModel
 
 class PreferencesFragment : Fragment() {
     lateinit var binding: FragmentPreferencesBinding
-    lateinit var prefsViewModel: PreferencesViewModel
-    lateinit var prefs: AppSettings
+    private lateinit var prefsViewModel: PreferencesViewModel
+    private lateinit var prefs: AppSettings
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentPreferencesBinding.inflate(layoutInflater)
         setHasOptionsMenu(true)
         // Inflate the layout for this fragment
@@ -82,12 +78,12 @@ class PreferencesFragment : Fragment() {
 
     private fun initViewModel() {
         prefsViewModel = ViewModelProvider(this).get(PreferencesViewModel::class.java)
-        prefsViewModel.prefsLiveData.observe(viewLifecycleOwner, Observer {
+        prefsViewModel.prefsLiveData.observe(viewLifecycleOwner, {
             renderUi(it)
         })
     }
 
-    fun renderUi(appSettings: AppSettings) {
+    private fun renderUi(appSettings: AppSettings) {
         binding.switchMode.isChecked = appSettings.mode == 0
         if (appSettings.mode == 0) {
             binding.switchTypeFraction.isChecked = appSettings.isMixedFraction
@@ -103,7 +99,7 @@ class PreferencesFragment : Fragment() {
             val pr = appSettings.precision
             if (pr <= 4) {
                 binding.fractionPreview.precision = pr
-                binding.tiEtPrecision.setText("${pr}")
+                binding.tiEtPrecision.setText("$pr")
                 binding.tiEtPrecision.error = null
             } else {
                 binding.tiEtPrecision.error = context?.resources?.getString(R.string.enter_precision_error)

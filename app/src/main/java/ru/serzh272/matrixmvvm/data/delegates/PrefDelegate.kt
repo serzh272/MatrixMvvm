@@ -39,7 +39,7 @@ class PrefDelegate<T> (private val defaultValue: T, private val customKey:String
         }
     }
 
-    fun createKey(name:String, value: T):Preferences.Key<T> =
+    private fun createKey(name:String, value: T):Preferences.Key<T> =
         when (value){
             is Int -> intPreferencesKey(name)
             is Long -> longPreferencesKey(name)

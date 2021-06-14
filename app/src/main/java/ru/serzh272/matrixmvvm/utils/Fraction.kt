@@ -1,4 +1,4 @@
-package ru.serzh272.matrix
+package ru.serzh272.matrixmvvm.utils
 
 import java.lang.Exception
 import java.util.*

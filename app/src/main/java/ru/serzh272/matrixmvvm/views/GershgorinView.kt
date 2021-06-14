@@ -8,7 +8,7 @@ import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
 import com.google.android.material.color.MaterialColors
-import ru.serzh272.matrix.Fraction
+import ru.serzh272.matrixmvvm.utils.Fraction
 import ru.serzh272.matrixmvvm.extensions.dpToPx
 import ru.serzh272.matrixmvvm.utils.Matrix
 import kotlin.math.*
@@ -22,7 +22,7 @@ class GershgorinView @JvmOverloads constructor(
     View(context, attrs, defStyleAttr) {
 
     private var textPaint: Paint
-    private var circlesPaint: Paint
+    private var circlesPaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
     private var axisPaint: Paint
     private var mMatrix: Matrix = Matrix(
         "{-2, 1/2, 1/2}," +
@@ -33,6 +33,8 @@ class GershgorinView @JvmOverloads constructor(
     private var mXAxisColor = 0
     private var mYAxisColor = 0
     private var filled = false
+    private val origin
+        get() = PointF(width.toFloat() / 2, height.toFloat() / 2)
 
     constructor(context: Context, m: Matrix) : this(context, null, 0) {
         mMatrix = m.copy()
@@ -40,7 +42,6 @@ class GershgorinView @JvmOverloads constructor(
     }
 
     init {
-        circlesPaint = Paint(Paint.ANTI_ALIAS_FLAG)
         axisPaint = Paint(Paint.ANTI_ALIAS_FLAG)
         textPaint = Paint(Paint.ANTI_ALIAS_FLAG)
         textPaint.style = Paint.Style.FILL
@@ -60,7 +61,7 @@ class GershgorinView @JvmOverloads constructor(
         requestLayout()
     }
 
-    fun GetMaxValue(arr: DoubleArray): Double {
+    fun getMaxValue(arr: DoubleArray): Double {
         var max = arr[0]
         for (i in 1 until arr.size) {
             max = max(max, arr[i])
@@ -68,7 +69,7 @@ class GershgorinView @JvmOverloads constructor(
         return max
     }
 
-    fun GetMinValue(arr: DoubleArray): Double {
+    fun getMinValue(arr: DoubleArray): Double {
         var min = arr[0]
         for (i in 1 until arr.size) {
             min = Math.min(min, arr[i])
@@ -77,8 +78,6 @@ class GershgorinView @JvmOverloads constructor(
     }
 
     override fun onDraw(canvas: Canvas?) {
-        //super.onDraw(canvas)
-        val origin = PointF(width.toFloat() / 2, height.toFloat() / 2)
         val circles = calculateCircles(mMatrix)
         //val circles = listOf<Circle>(Circle(300f, PointF(-50f,0f)), Circle(300f, PointF(-100f,0f)), Circle(150f, PointF(-25f,-300f)))
         circlesPaint.color = mYAxisColor
@@ -104,33 +103,39 @@ class GershgorinView @JvmOverloads constructor(
         )
     }
 
-    private fun drawArrow(canvas: Canvas?, startX: Float, startY: Float, stopX: Float, stopY: Float, p: Paint) {
+    private fun drawArrow(
+        canvas: Canvas?,
+        startX: Float,
+        startY: Float,
+        stopX: Float,
+        stopY: Float,
+        p: Paint
+    ) {
         canvas?.drawLine(startX, startY, stopX, stopY, p)
-        val ang = atan((-stopY + startY)/(stopX - startX))
+        val ang = atan((-stopY + startY) / (stopX - startX))
         val a = Math.toRadians(15.0)
         val l = context.dpToPx(6)
-        var x1:Double
-        var y1:Double
-        var x3:Double
-        var y4:Double
-        if (stopX >= startX){
-            x1 = stopX - l* cos(ang - a)
-            y1 = stopY + l* sin(ang - a)
-            x3 = stopX - l* sin(PI/2 - ang - a)
-            y4 = stopY + l* cos(PI/2 - ang - a)
-        }else{
-            x1 = stopX + l* cos(ang - a)
-            y1 = stopY - l* sin(ang - a)
-            x3 = stopX + l* sin(PI/2 - ang - a)
-            y4 = stopY - l* cos(PI/2 - ang - a)
+        val x1: Double
+        val y1: Double
+        val x3: Double
+        val y4: Double
+        if (stopX >= startX) {
+            x1 = stopX - l * cos(ang - a)
+            y1 = stopY + l * sin(ang - a)
+            x3 = stopX - l * sin(PI / 2 - ang - a)
+            y4 = stopY + l * cos(PI / 2 - ang - a)
+        } else {
+            x1 = stopX + l * cos(ang - a)
+            y1 = stopY - l * sin(ang - a)
+            x3 = stopX + l * sin(PI / 2 - ang - a)
+            y4 = stopY - l * cos(PI / 2 - ang - a)
 
         }
         canvas?.drawLine(stopX, stopY, x1.toFloat(), y1.toFloat(), p)
         canvas?.drawLine(stopX, stopY, x3.toFloat(), y4.toFloat(), p)
-        //canvas?.drawLine(startX, startY, startX + context.dpToPx(2), context.dpToPx(8), p)
     }
 
-    fun calculateCircles(m: Matrix): MutableList<Circle> {
+    private fun calculateCircles(m: Matrix): MutableList<Circle> {
         val rez = mutableListOf<Circle>()
         val arrFr: MutableList<MutableList<Fraction>> = mutableListOf()
         mMatrix = m.copy()
@@ -196,16 +201,18 @@ class GershgorinView @JvmOverloads constructor(
                 c.radius * mult,
                 circlesPaint
             )
-            drawArrow(canvas,
+            drawArrow(
+                canvas,
                 origin.x + c.anchor.x * mult,
                 origin.y - c.anchor.y * mult,
-                origin.x + c.anchor.x * mult - c.radius*mult*sin(PI/4).toFloat(),
-                origin.y - c.anchor.y * mult - c.radius*mult*sin(PI/4).toFloat(),
-                circlesPaint)
+                origin.x + c.anchor.x * mult - c.radius * mult * sin(PI / 4).toFloat(),
+                origin.y - c.anchor.y * mult - c.radius * mult * sin(PI / 4).toFloat(),
+                circlesPaint
+            )
             canvas?.drawText(
                 "r = ${c.radius}",
-                origin.x + c.anchor.x * mult - c.radius*mult*sin(PI/4).toFloat()/2,
-                origin.y - c.anchor.y * mult - c.radius*mult*sin(PI/4).toFloat()/2,
+                origin.x + c.anchor.x * mult - c.radius * mult * sin(PI / 4).toFloat() / 2,
+                origin.y - c.anchor.y * mult - c.radius * mult * sin(PI / 4).toFloat() / 2,
                 textPaint
             )
             canvas?.drawLine(
@@ -225,7 +232,7 @@ class GershgorinView @JvmOverloads constructor(
             canvas?.drawText(
                 "(${c.anchor.x}; ${c.anchor.y})",
                 origin.x + c.anchor.x * mult + context.dpToPx(2),
-                origin.y - c.anchor.y * mult - context.dpToPx(2)+2*textPaint.textSize,
+                origin.y - c.anchor.y * mult - context.dpToPx(2) + 2 * textPaint.textSize,
                 textPaint
             )
         }
@@ -264,9 +271,7 @@ class GershgorinView @JvmOverloads constructor(
     inner class Circle(
         var radius: Float = 1.0f,
         var anchor: PointF = PointF(0f, 0f)
-    ) {
-
-    }
+    )
 }
 
 

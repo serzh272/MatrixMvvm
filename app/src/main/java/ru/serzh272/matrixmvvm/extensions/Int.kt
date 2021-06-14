@@ -1,6 +1,6 @@
 package ru.serzh272.matrixmvvm.extensions
 
-import ru.serzh272.matrix.Fraction
+import ru.serzh272.matrixmvvm.utils.Fraction
 
 @ExperimentalUnsignedTypes
 operator fun Int.plus(fr: Fraction): Fraction {

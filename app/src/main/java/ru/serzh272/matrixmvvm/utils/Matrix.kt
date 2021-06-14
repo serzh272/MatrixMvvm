@@ -1,14 +1,11 @@
 package ru.serzh272.matrixmvvm.utils
 
-import android.content.res.Resources
 import android.os.Parcel
 import android.os.Parcelable
-import ru.serzh272.matrix.Fraction
 import ru.serzh272.matrixmvvm.App
 import ru.serzh272.matrixmvvm.R
 import ru.serzh272.matrixmvvm.exceptions.DeterminantZeroException
 import ru.serzh272.matrixmvvm.exceptions.MatrixDimensionsException
-import kotlin.jvm.Throws
 import kotlin.math.sqrt
 
 @ExperimentalUnsignedTypes
@@ -454,11 +451,11 @@ class Matrix(r: Int = 3, c: Int = 3) : Parcelable {
                             //mFr.A[i][j].Color = Color.FromRgb(127, 251, 189);
                         }
                     }
-                    for (i in n - g - 1 until n) {
-                        for (j in n - g - 1 until n) {
-                            //mFr.A[i, j].Color = Color.FromRgb(127, 251, 189);
-                        }
-                    }
+//                    for (i in n - g - 1 until n) {
+//                        for (j in n - g - 1 until n) {
+//                            //mFr.A[i, j].Color = Color.FromRgb(127, 251, 189);
+//                        }
+//                    }
                     return mFr
                 } else if (mFr[n - g - 1, n - g - 2].equals(0)) {
                     mFr.swapColumns(n - g - 1, n - g - 2)

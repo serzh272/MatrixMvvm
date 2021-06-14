@@ -4,17 +4,11 @@ import android.content.Context
 import android.content.res.TypedArray
 import android.graphics.*
 import android.util.AttributeSet
-import android.util.Log
-import android.view.GestureDetector
-import android.view.MotionEvent
-import android.widget.Toast
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.color.MaterialColors
-import ru.serzh272.matrix.Fraction
 import ru.serzh272.matrixmvvm.R
 import ru.serzh272.matrixmvvm.extensions.dpToPx
-import ru.serzh272.matrixmvvm.repositories.PreferencesRepository
-import ru.serzh272.matrixmvvm.utils.MotionEventsDebugger
+import ru.serzh272.matrixmvvm.utils.Fraction
 import kotlin.math.abs
 import kotlin.math.max
 
@@ -23,10 +17,9 @@ class FractionView @JvmOverloads constructor(context: Context,
                    attrs: AttributeSet? = null,
                    defStyleAttr: Int = 0
 ): MaterialButton(context,attrs, defStyleAttr){
-    var fractionTextColor: Int = Color.WHITE
-    var backColor: Int = Color.LTGRAY
+    private var fractionTextColor: Int = Color.WHITE
+    private var backColor: Int = Color.LTGRAY
     var mode = Fraction.FractionType.COMMON
-    var size:Int = 0
     var mFraction = Fraction(0, 1u)
     var precision = 2
     private var sp:Float = 0.0f
@@ -64,7 +57,7 @@ class FractionView @JvmOverloads constructor(context: Context,
         invalidate()
     }
 
-    fun showFraction(canvas: Canvas, fraction: Fraction) {
+    private fun showFraction(canvas: Canvas, fraction: Fraction) {
         val p = Paint(Paint.ANTI_ALIAS_FLAG)
         p.style = Paint.Style.STROKE
         p.strokeWidth = 0.0f
@@ -84,7 +77,7 @@ class FractionView @JvmOverloads constructor(context: Context,
         p.style = Paint.Style.FILL
         p.color = backColor
         //canvas.drawRect(0.0f, 0.0f, this.width.toFloat(), this.height.toFloat(),p)
-        p.setColor(fractionTextColor)
+        p.color = fractionTextColor
         if ((fraction.denominator == 1u) or (mode == Fraction.FractionType.DECIMAL)){
             txt = if (mode == Fraction.FractionType.DECIMAL){
                 if (fraction.numerator%fraction.denominator.toLong() == 0L){
@@ -121,11 +114,11 @@ class FractionView @JvmOverloads constructor(context: Context,
             p.getTextBounds(txt,0, txt.length, bndDen)
             sp = bndDen.height().toFloat()/5
             var wdt:Float = max(bndNum.width().toFloat(), bndDen.width().toFloat())
-            if (integ != 0){
-                integTxt = integ.toString()
+            integTxt = if (integ != 0){
+                integ.toString()
 
             }else{
-                integTxt = if (numerator < 0) "-" else ""
+                if (numerator < 0) "-" else ""
             }
             p.getTextBounds(integTxt, 0, integTxt.length, bndInteg)
             frSpan = bndInteg.width().toFloat()/2 +sp

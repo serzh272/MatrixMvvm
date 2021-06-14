@@ -1,10 +1,7 @@
 
 package ru.serzh272.matrixmvvm.views
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import androidx.navigation.findNavController
-import androidx.navigation.ui.setupActionBarWithNavController
-import ru.serzh272.matrixmvvm.R
+import androidx.appcompat.app.AppCompatActivity
 import ru.serzh272.matrixmvvm.databinding.ActivityMainBinding
 
 @ExperimentalUnsignedTypes

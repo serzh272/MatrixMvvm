@@ -25,4 +25,7 @@
     <string name="set_num_rows">Default number of rows</string>
     <string name="set_num_cols">Default number of columns</string>
     <string name="enter_num_rows_columns_error">"Enter number from 1 to 10 "</string>
+    <string name="a_plus_b" translatable="false">A + B</string>
+    <string name="a_minus_b" translatable="false">A - B</string>
+    <string name="a_mult_b" translatable="false">A × B</string>
 </resources>

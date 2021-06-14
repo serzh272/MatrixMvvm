@@ -17,7 +17,7 @@ class PlotFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentPlotBinding.inflate(layoutInflater)
         binding.gershgorinPlot.drawCircles(args.matrix)
         binding.gershgorinPlot.setOnClickListener{

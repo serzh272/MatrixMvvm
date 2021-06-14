@@ -18,15 +18,15 @@
                 android:icon="@drawable/ic_determinant"/>
             <item
                 android:id="@+id/summ_item"
-                android:title="A + B"
+                android:title="@string/a_plus_b"
                 android:icon="@drawable/ic_add"/>
             <item
                 android:id="@+id/diff_item"
-                android:title="A - B"
+                android:title="@string/a_minus_b"
                 android:icon="@drawable/ic_remove"/>
             <item
                 android:id="@+id/multiply_item"
-                android:title="A × B"
+                android:title="@string/a_mult_b"
                 android:icon="@drawable/ic_mult"/>
             <item
                 android:id="@+id/inverse_item"

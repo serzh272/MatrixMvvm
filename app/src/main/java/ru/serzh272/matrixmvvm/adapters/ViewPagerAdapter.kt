@@ -1,21 +1,18 @@
 package ru.serzh272.matrixmvvm.adapters
 
-import android.content.Context
-import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import ru.serzh272.matrix.Fraction
 import ru.serzh272.matrixmvvm.data.AppSettings
 import ru.serzh272.matrixmvvm.repositories.PreferencesRepository
+import ru.serzh272.matrixmvvm.utils.Fraction
 import ru.serzh272.matrixmvvm.utils.Matrix
-import ru.serzh272.matrixmvvm.views.FractionView
 import ru.serzh272.matrixmvvm.views.MatrixViewGroup
 
 
 @ExperimentalUnsignedTypes
 class ViewPagerAdapter : RecyclerView.Adapter<ViewPagerAdapter.MatrixViewHolder>() {
-    var matrices: MutableList<Matrix> = mutableListOf()
-    var matrixViews: MutableList<MatrixViewGroup> = mutableListOf()
+    private var matrices: MutableList<Matrix> = mutableListOf()
+    private var matrixViews: MutableList<MatrixViewGroup> = mutableListOf()
     private var listener: OnDataChangedListener? = null
 
     class MatrixViewHolder(matrixView: MatrixViewGroup) : RecyclerView.ViewHolder(matrixView) {

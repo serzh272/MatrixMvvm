@@ -14,7 +14,7 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textfield.TextInputLayout
 import com.google.android.material.textview.MaterialTextView
-import ru.serzh272.matrix.Fraction
+import ru.serzh272.matrixmvvm.utils.Fraction
 import ru.serzh272.matrixmvvm.R
 import ru.serzh272.matrixmvvm.extensions.dpToPx
 import ru.serzh272.matrixmvvm.utils.Matrix
